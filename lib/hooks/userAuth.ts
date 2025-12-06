@@ -71,11 +71,13 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
       const response = await authAPI.student.register(data);
-      setToken(response.token);
-      setUserData(response.user);
-      router.push('/student/dashboard');
+      console.log('Register response:', response);
+      console.log('Token:', response.token);
+      console.log('User:', response.user);
+      router.push('/student/login');
       return response;
     } catch (err: any) {
+      console.error('Registration error:', err);
       setError(err.response?.data?.message || 'Registration failed');
       throw err;
     } finally {

@@ -4,12 +4,16 @@ export interface LoginCredentials {
 }
 
 export interface StudentRegisterData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  registrationNumber: string;
-  department?: string;
-  batch?: string;
+  rollNumber: string;
+  department: string;
+  semester: string;
+  program: string;
+  phoneNumber: string;
+  cgpa: number;
 }
 
 export interface AuthResponse {
