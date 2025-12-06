@@ -23,15 +23,29 @@ export interface AuthResponse {
 }
 
 export interface User {
-  id: string;
+  id?: string;
+  _id?: string;
   email: string;
-  name: string;
-  role: UserRole;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  role: string;
+  rollNumber?: string;
   registrationNumber?: string;
   department?: string;
   batch?: string;
+  semester?: string;
+  program?: string;
+  phoneNumber?: string;
+  cgpa?: number;
   specialization?: string;
   officeLocation?: string;
+  designation?: string;
+  isRegisteredForFYP?: boolean;
+  isRegisteredForFyp?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export enum UserRole {

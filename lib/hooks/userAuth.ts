@@ -13,18 +13,20 @@ export const useAuth = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Clear any old data first
+      removeToken();
+      
       const response = await authAPI.student.login(credentials);
-      console.log('Login response:', response);
-      console.log('Token:', response.token);
-      console.log('User:', response.user);
-      console.log('Response keys:', Object.keys(response));
       
       setToken(response.token, rememberMe);
       setUserData(response.user, rememberMe);
-      router.push('/student/dashboard');
+      
+      // Small delay to ensure state is saved before navigation
+      await new Promise(resolve => setTimeout(resolve, 200));
+      router.replace('/student/dashboard');
       return response;
     } catch (err: any) {
-      console.error('Login error:', err);
       setError(err.response?.data?.message || 'Login failed');
       throw err;
     } finally {
@@ -39,7 +41,10 @@ export const useAuth = () => {
       const response = await authAPI.supervisor.login(credentials);
       setToken(response.token, rememberMe);
       setUserData(response.user, rememberMe);
-      router.push('/supervisor/dashboard');
+      
+      // Small delay to ensure state is saved before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      router.replace('/supervisor/dashboard');
       return response;
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
@@ -56,7 +61,10 @@ export const useAuth = () => {
       const response = await authAPI.coordinator.login(credentials);
       setToken(response.token, rememberMe);
       setUserData(response.user, rememberMe);
-      router.push('/coordinator/dashboard');
+      
+      // Small delay to ensure state is saved before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      router.replace('/coordinator/dashboard');
       return response;
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');

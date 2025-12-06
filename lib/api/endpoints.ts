@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const ENDPOINTS = {
   STUDENT: {
@@ -15,5 +15,10 @@ export const ENDPOINTS = {
   COORDINATOR: {
     LOGIN: `${API_BASE_URL}/auth/coordinator/login`,
     PROFILE: `${API_BASE_URL}/auth/coordinator/profile`,
+  },
+  DASHBOARD: {
+    STUDENT: `${API_BASE_URL}/dashboard/student`,
+    SUPERVISOR: `${API_BASE_URL}/dashboard/supervisor`,
+    COORDINATOR: `${API_BASE_URL}/dashboard/coordinator`,
   },
 } as const;
