@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/hooks/userAuth';
 export default function SupervisorLogin() {
   const { loginSupervisor, loading, error } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -14,7 +15,7 @@ export default function SupervisorLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await loginSupervisor(formData);
+    await loginSupervisor(formData, rememberMe);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,6 +100,8 @@ export default function SupervisorLogin() {
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
                       className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                     />
                     <span className="ml-2 text-gray-700">Remember me</span>

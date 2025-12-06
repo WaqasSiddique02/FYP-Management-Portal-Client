@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/hooks/userAuth';
 export default function CoordinatorLogin() {
   const { loginCoordinator, loading, error } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -14,7 +15,7 @@ export default function CoordinatorLogin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await loginCoordinator(formData);
+    await loginCoordinator(formData, rememberMe);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +94,12 @@ export default function CoordinatorLogin() {
 
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 text-purple-600 border-gray-300 rounded" />
+                    <input 
+                      type="checkbox" 
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 text-purple-600 border-gray-300 rounded" 
+                    />
                     <span className="ml-2 text-gray-700">Remember me</span>
                   </label>
                   <a href="#" className="text-purple-600 hover:text-purple-800 font-medium">

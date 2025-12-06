@@ -9,7 +9,7 @@ export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const loginStudent = async (credentials: LoginCredentials) => {
+  const loginStudent = async (credentials: LoginCredentials, rememberMe: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
@@ -19,8 +19,8 @@ export const useAuth = () => {
       console.log('User:', response.user);
       console.log('Response keys:', Object.keys(response));
       
-      setToken(response.token);
-      setUserData(response.user);
+      setToken(response.token, rememberMe);
+      setUserData(response.user, rememberMe);
       router.push('/student/dashboard');
       return response;
     } catch (err: any) {
@@ -32,13 +32,13 @@ export const useAuth = () => {
     }
   };
 
-  const loginSupervisor = async (credentials: LoginCredentials) => {
+  const loginSupervisor = async (credentials: LoginCredentials, rememberMe: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
       const response = await authAPI.supervisor.login(credentials);
-      setToken(response.token);
-      setUserData(response.user);
+      setToken(response.token, rememberMe);
+      setUserData(response.user, rememberMe);
       router.push('/supervisor/dashboard');
       return response;
     } catch (err: any) {
@@ -49,13 +49,13 @@ export const useAuth = () => {
     }
   };
 
-  const loginCoordinator = async (credentials: LoginCredentials) => {
+  const loginCoordinator = async (credentials: LoginCredentials, rememberMe: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
       const response = await authAPI.coordinator.login(credentials);
-      setToken(response.token);
-      setUserData(response.user);
+      setToken(response.token, rememberMe);
+      setUserData(response.user, rememberMe);
       router.push('/coordinator/dashboard');
       return response;
     } catch (err: any) {
