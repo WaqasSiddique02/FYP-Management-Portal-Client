@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/lib/hooks/userAuth';
 
 export default function SupervisorLogin() {
-  const router = useRouter();
+  const { loginSupervisor, loading, error } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Supervisor login:', formData);
+    await loginSupervisor(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +28,6 @@ export default function SupervisorLogin() {
     <div className="min-h-screen bg-green-600 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div className="grid md:grid-cols-2">
-
           <div className="bg-linear-to-br from-green-50 to-green-100 flex">
             <img
               src="/images/teacher.jpg"
@@ -42,8 +41,13 @@ export default function SupervisorLogin() {
               <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">Supervisor Login</h1>
               <p className="text-gray-600 mb-8 text-center">Welcome! Please login to your account</p>
 
-              <div className="space-y-5">
+              {error && (
+                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                  {error}
+                </div>
+              )}
 
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                     Email
@@ -57,6 +61,7 @@ export default function SupervisorLogin() {
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                     placeholder="Enter your email"
                     required
+                    disabled={loading}
                   />
                 </div>
 
@@ -74,6 +79,7 @@ export default function SupervisorLogin() {
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                       placeholder="Enter your password"
                       required
+                      disabled={loading}
                     />
                     <button
                       type="button"
@@ -103,23 +109,15 @@ export default function SupervisorLogin() {
                 </div>
 
                 <button
-                  onClick={handleSubmit}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Login
+                  {loading ? 'Logging in...' : 'Login'}
                 </button>
-
-                <p className="text-center text-sm text-gray-600 mt-4">
-                  Don't have an account?{' '}
-                  <a href="#" className="text-green-600 hover:text-green-800 font-medium">
-                    Create account
-                  </a>
-                </p>
-
-              </div>
+              </form>
             </div>
           </div>
-
         </div>
       </div>
     </div>

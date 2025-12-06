@@ -1,0 +1,65 @@
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface StudentRegisterData {
+  name: string;
+  email: string;
+  password: string;
+  registrationNumber: string;
+  department?: string;
+  batch?: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  token: string;
+  user: User;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  registrationNumber?: string;
+  department?: string;
+  batch?: string;
+  specialization?: string;
+  officeLocation?: string;
+}
+
+export enum UserRole {
+  STUDENT = 'STUDENT',
+  SUPERVISOR = 'SUPERVISOR',
+  COORDINATOR = 'COORDINATOR',
+}
+
+export interface SetPasswordData {
+  currentPassword?: string;
+  newPassword: string;
+  confirmPassword?: string;
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  department?: string;
+  specialization?: string;
+  officeLocation?: string;
+  phoneNumber?: string;
+}
+
+export interface AuthError {
+  message: string;
+  statusCode?: number;
+  error?: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  error: AuthError | null;
+}
