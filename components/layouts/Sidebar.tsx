@@ -25,8 +25,8 @@ interface SidebarProps {
 const studentNavItems = [
   { href: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/student/register-fyp', label: 'Register FYP', icon: UserPlus },
+  { href: '/student/select-project', label: 'Select Project', icon: BookOpen },
   { href: '/student/group', label: 'My Group', icon: Users },
-  { href: '/student/project', label: 'Project', icon: BookOpen },
   { href: '/student/proposal', label: 'Proposal', icon: FileText },
   { href: '/student/documents', label: 'Documents', icon: FolderOpen },
   { href: '/student/github', label: 'GitHub', icon: Github },

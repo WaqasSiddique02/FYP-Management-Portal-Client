@@ -31,4 +31,12 @@ export const ENDPOINTS = {
     REMOVE_MEMBER: (groupId: string, memberId: string) => `${API_BASE_URL}/groups/${groupId}/remove-member/${memberId}`,
     LEAVE: (groupId: string) => `${API_BASE_URL}/groups/${groupId}/leave`,
   },
+  PROJECT: {
+    SUPERVISOR_IDEAS: `${API_BASE_URL}/projects/supervisor/ideas`,
+    SELECT_IDEA: `${API_BASE_URL}/projects/select-idea`,
+    REQUEST_CUSTOM_IDEA: `${API_BASE_URL}/projects/request-custom-idea`,
+    MY_PROJECT: `${API_BASE_URL}/projects/my-project`,
+    SUBMIT_GITHUB: `${API_BASE_URL}/projects/github`,
+    MY_GITHUB: `${API_BASE_URL}/projects/github/my`,
+  },
 } as const;
