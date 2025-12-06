@@ -12,7 +12,8 @@ import {
   Settings,
   BookOpen,
   Github,
-  GraduationCap
+  GraduationCap,
+  UserPlus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +24,7 @@ interface SidebarProps {
 
 const studentNavItems = [
   { href: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/student/register-fyp', label: 'Register FYP', icon: UserPlus },
   { href: '/student/group', label: 'My Group', icon: Users },
   { href: '/student/project', label: 'Project', icon: BookOpen },
   { href: '/student/proposal', label: 'Proposal', icon: FileText },

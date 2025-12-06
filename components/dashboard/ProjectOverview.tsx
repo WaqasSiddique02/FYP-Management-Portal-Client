@@ -13,6 +13,7 @@ interface ProjectOverviewProps {
     ideaStatus: string;
     customIdeaDescription: string;
     supervisorFeedback: string | null;
+    rejectionReason?: string | null;
   };
   supervisor: {
     name: string;
@@ -77,6 +78,20 @@ export default function ProjectOverview({ project, supervisor }: ProjectOverview
             <p className="text-xs text-gray-500 mt-1">{supervisor.email}</p>
           </div>
         </div>
+
+        {project.ideaStatus?.toLowerCase() === 'rejected' && project.rejectionReason && (
+          <>
+            <Separator />
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+              <div className="flex items-start gap-2 mb-2">
+                <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                <p className="text-sm font-semibold text-red-900">Rejection Reason</p>
+              </div>
+              <p className="text-sm text-red-700 ml-7">{project.rejectionReason}</p>
+              <p className="text-xs text-red-600 mt-2 ml-7">Action Required: Please address the feedback and resubmit your idea.</p>
+            </div>
+          </>
+        )}
 
         {project.supervisorFeedback && (
           <>

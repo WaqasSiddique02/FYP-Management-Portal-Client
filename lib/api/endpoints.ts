@@ -4,7 +4,10 @@ export const ENDPOINTS = {
   STUDENT: {
     LOGIN: `${API_BASE_URL}/auth/student/login`,
     REGISTER: `${API_BASE_URL}/auth/student/register`,
-    PROFILE: `${API_BASE_URL}/auth/student/profile`,
+    PROFILE: `${API_BASE_URL}/students/profile`,
+    REGISTER_FYP: `${API_BASE_URL}/students/register-fyp`,
+    DEPARTMENTS: `${API_BASE_URL}/students/departments`,
+    SEARCH: `${API_BASE_URL}/auth/student/search`,
   },
   SUPERVISOR: {
     LOGIN: `${API_BASE_URL}/auth/supervisor/login`,
@@ -20,5 +23,12 @@ export const ENDPOINTS = {
     STUDENT: `${API_BASE_URL}/dashboard/student`,
     SUPERVISOR: `${API_BASE_URL}/dashboard/supervisor`,
     COORDINATOR: `${API_BASE_URL}/dashboard/coordinator`,
+  },
+  GROUP: {
+    CREATE: `${API_BASE_URL}/groups`,
+    MY_GROUP: `${API_BASE_URL}/groups/my-group`,
+    ADD_MEMBER: (groupId: string) => `${API_BASE_URL}/groups/${groupId}/add-member`,
+    REMOVE_MEMBER: (groupId: string, memberId: string) => `${API_BASE_URL}/groups/${groupId}/remove-member/${memberId}`,
+    LEAVE: (groupId: string) => `${API_BASE_URL}/groups/${groupId}/leave`,
   },
 } as const;

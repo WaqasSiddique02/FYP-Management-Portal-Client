@@ -81,10 +81,11 @@ export default function StudentDashboard() {
 
       {/* Stats Cards */}
       <StatsCards
-        groupMembersCount={dashboardData.group?.groupMembers?.length || 0}
-        documentsCount={dashboardData.documents?.documentsCount || 0}
+        scheduleTime={dashboardData.schedule?.scheduledAt || null}
         proposalStatus={dashboardData.proposal?.proposalStatus || 'pending'}
-        totalMarks={dashboardData.feedback?.totalMarks || 0}
+        ideaStatus={dashboardData.project?.ideaStatus || 'pending'}
+        supervisorName={dashboardData.supervisor?.name || 'Not Assigned'}
+        rejectionReason={dashboardData.project?.rejectionReason || null}
       />
 
       {/* Main Content Grid */}
