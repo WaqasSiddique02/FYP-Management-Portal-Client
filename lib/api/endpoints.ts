@@ -47,4 +47,8 @@ export const ENDPOINTS = {
     UPLOAD: `${API_BASE_URL}/documents`,
     MY_DOCUMENTS: `${API_BASE_URL}/documents/my-documents`,
   },
+  SCHEDULE: {
+    MY_SCHEDULE: `${API_BASE_URL}/students/schedule/my-schedule`,
+    MY_PANEL: `${API_BASE_URL}/students/schedule/my-panel`,
+  },
 } as const;

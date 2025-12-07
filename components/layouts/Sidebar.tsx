@@ -15,7 +15,8 @@ import {
   GraduationCap,
   UserPlus,
   Upload,
-  BarChart3
+  BarChart3,
+  Calendar
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -30,7 +31,7 @@ const studentNavItems = [
   { href: '/student/select-project', label: 'Select Project', icon: BookOpen },
   { href: '/student/documents', label: 'Upload Documents', icon: Upload },
   { href: '/student/marks-report', label: 'Marks Report', icon: BarChart3 },
-  { href: '/student/feedback', label: 'Feedback', icon: MessageSquare },
+  { href: '/student/demo-details', label: 'Demo Details', icon: Calendar },
   { href: '/student/settings', label: 'Settings', icon: Settings },
 ];
 
