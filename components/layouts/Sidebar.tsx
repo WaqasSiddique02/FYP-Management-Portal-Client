@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 
 interface SidebarProps {
   role: 'student' | 'supervisor' | 'coordinator';
+  isMobile?: boolean;
 }
 
 const studentNavItems = [
@@ -53,7 +54,7 @@ const coordinatorNavItems = [
   { href: '/coordinator/settings', label: 'Settings', icon: Settings },
 ];
 
-export default function Sidebar({ role }: SidebarProps) {
+export default function Sidebar({ role, isMobile = false }: SidebarProps) {
   const pathname = usePathname();
   
   const navItems = role === 'student' 
@@ -63,7 +64,10 @@ export default function Sidebar({ role }: SidebarProps) {
     : coordinatorNavItems;
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
+    <aside className={cn(
+      "flex flex-col w-64 bg-white border-r border-gray-200 h-screen",
+      isMobile ? "" : "hidden lg:flex sticky top-0"
+    )}>
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <GraduationCap className="h-6 w-6 text-blue-600" />

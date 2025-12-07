@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useAuth } from '@/lib/hooks/userAuth';
 import { useAuthContext } from '@/lib/contexts/AuthContext';
 
@@ -53,6 +53,10 @@ export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-64">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              <SheetDescription className="sr-only">
+                Main navigation menu for the FYP Management Portal
+              </SheetDescription>
               {sidebarContent}
             </SheetContent>
           </Sheet>
