@@ -16,7 +16,8 @@ import {
   UserPlus,
   Upload,
   BarChart3,
-  Calendar
+  Calendar,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -32,7 +33,7 @@ const studentNavItems = [
   { href: '/student/documents', label: 'Upload Documents', icon: Upload },
   { href: '/student/marks-report', label: 'Marks Report', icon: BarChart3 },
   { href: '/student/demo-details', label: 'Demo Details', icon: Calendar },
-  { href: '/student/settings', label: 'Settings', icon: Settings },
+  { href: '/student/profile', label: 'Profile', icon: User },
 ];
 
 const supervisorNavItems = [
