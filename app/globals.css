@@ -120,3 +120,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Print Styles for Marks Report */
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  aside,
+  nav,
+  header,
+  button {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .space-y-6 > * {
+    page-break-inside: avoid;
+  }
+
+  .grid {
+    page-break-inside: avoid;
+  }
+}

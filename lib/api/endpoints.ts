@@ -39,4 +39,12 @@ export const ENDPOINTS = {
     SUBMIT_GITHUB: `${API_BASE_URL}/projects/github`,
     MY_GITHUB: `${API_BASE_URL}/projects/github/my`,
   },
+  PROPOSAL: {
+    UPLOAD: `${API_BASE_URL}/proposals`,
+    MY_DOCUMENTS: `${API_BASE_URL}/documents/my-documents`,
+  },
+  DOCUMENTS: {
+    UPLOAD: `${API_BASE_URL}/documents`,
+    MY_DOCUMENTS: `${API_BASE_URL}/documents/my-documents`,
+  },
 } as const;
