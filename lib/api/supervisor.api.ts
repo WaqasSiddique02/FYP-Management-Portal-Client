@@ -257,4 +257,75 @@ export const supervisorApi = {
     );
     return response.data;
   },
+
+  // Presentation Schedules
+  getMyPanels: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/schedules/my-panels`);
+    // Handle nested data structure
+    const data = response.data?.data || response.data;
+    return {
+      panels: data?.panels || [],
+      totalPanels: data?.totalPanels || 0,
+      message: data?.message || ''
+    };
+  },
+
+  getMyPanelSchedules: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/schedules/panel-schedules`);
+    // Handle nested data structure
+    const data = response.data?.data || response.data;
+    return {
+      schedules: data?.schedules || [],
+      totalSchedules: data?.totalSchedules || 0,
+      message: data?.message || ''
+    };
+  },
+
+  getAssignedGroupsSchedules: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/schedules/assigned-groups`);
+    // Handle nested data structure
+    const data = response.data?.data || response.data;
+    return {
+      schedules: data?.schedules || [],
+      unscheduledGroups: data?.unscheduledGroups || [],
+      totalAssignedGroups: data?.totalAssignedGroups || 0,
+      scheduledCount: data?.scheduledCount || 0,
+      unscheduledCount: data?.unscheduledCount || 0,
+      message: data?.message || ''
+    };
+  },
+
+  // Profile Management
+  getProfile: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/auth/supervisor/profile`);
+    const data = response.data?.data || response.data;
+    // Remove assignedGroups from profile data
+    if (data && data.assignedGroups) {
+      delete data.assignedGroups;
+    }
+    return data;
+  },
+
+  updateProfile: async (payload: {
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    designation?: string;
+    specialization?: string;
+    researchInterests?: string[];
+    officeLocation?: string;
+    officeHours?: string;
+    maxStudents?: number;
+  }) => {
+    const response = await apiClient.patch(`${API_BASE_URL}/auth/supervisor/profile`, payload);
+    return response.data;
+  },
+
+  updatePassword: async (payload: {
+    currentPassword: string;
+    newPassword: string;
+  }) => {
+    const response = await apiClient.patch(`${API_BASE_URL}/auth/supervisor/set-password`, payload);
+    return response.data;
+  },
 };

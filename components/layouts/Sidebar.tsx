@@ -44,7 +44,8 @@ const supervisorNavItems = [
   { href: '/supervisor/project-ideas', label: 'Project Ideas', icon: Lightbulb },
   { href: '/supervisor/proposals', label: 'Proposals', icon: FileText },
   { href: '/supervisor/evaluations', label: 'Evaluations', icon: BookOpen },
-  { href: '/supervisor/settings', label: 'Settings', icon: Settings },
+  { href: '/supervisor/schedules', label: 'Schedules', icon: Calendar },
+  { href: '/supervisor/profile', label: 'Profile', icon: User },
 ];
 
 const coordinatorNavItems = [
