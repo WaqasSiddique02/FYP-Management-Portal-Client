@@ -15,7 +15,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
       <Sidebar role={role} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar sidebarContent={<Sidebar role={role} isMobile={true} />} />
+        <Navbar role={role} sidebarContent={<Sidebar role={role} isMobile={true} />} />
         
         <main className="flex-1 overflow-y-auto">
           <div className="container mx-auto p-4 lg:p-6">

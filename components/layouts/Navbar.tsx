@@ -18,14 +18,26 @@ import { useAuthContext } from '@/lib/contexts/AuthContext';
 
 
 interface NavbarProps {
+  role?: 'student' | 'supervisor' | 'coordinator';
   onMenuClick?: () => void;
   sidebarContent?: React.ReactNode;
 }
 
-export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
+export default function Navbar({ role, onMenuClick, sidebarContent }: NavbarProps) {
   const { logout } = useAuth();
   const { user } = useAuthContext();
   const [mounted, setMounted] = useState(false);
+
+  // Color scheme based on role
+  const colorScheme = role === 'supervisor' 
+    ? {
+        primary: 'text-green-600',
+        bgPrimary: 'bg-green-100',
+      }
+    : {
+        primary: 'text-blue-600',
+        bgPrimary: 'bg-blue-100',
+      };
 
   useEffect(() => {
     setMounted(true);
@@ -68,7 +80,7 @@ export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
             </Sheet>
             
             <div className="lg:hidden">
-              <h2 className="text-lg font-bold text-blue-600">FYP Portal</h2>
+              <h2 className={`text-lg font-bold ${colorScheme.primary}`}>FYP Portal</h2>
             </div>
           </div>
 
@@ -77,7 +89,7 @@ export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 px-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-blue-100 text-blue-600 text-xs font-medium">
+                    <AvatarFallback className={`${colorScheme.bgPrimary} ${colorScheme.primary} text-xs font-medium`}>
                       U
                     </AvatarFallback>
                   </Avatar>
@@ -123,7 +135,7 @@ export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
           </Sheet>
           
           <div className="lg:hidden">
-            <h2 className="text-lg font-bold text-blue-600">FYP Portal</h2>
+            <h2 className={`text-lg font-bold ${colorScheme.primary}`}>FYP Portal</h2>
           </div>
         </div>
 
@@ -134,7 +146,7 @@ export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2 px-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-blue-100 text-blue-600 text-xs font-medium">
+                  <AvatarFallback className={`${colorScheme.bgPrimary} ${colorScheme.primary} text-xs font-medium`}>
                     {getInitials(getDisplayName())}
                   </AvatarFallback>
                 </Avatar>

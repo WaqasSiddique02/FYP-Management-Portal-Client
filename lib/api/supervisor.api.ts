@@ -120,4 +120,46 @@ export const supervisorApi = {
     const response = await apiClient.delete(`${API_BASE_URL}/supervisor/project-ideas/${ideaId}`);
     return response.data;
   },
+
+  // Proposals Management
+  getProposals: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/proposals`);
+    // Handle different response formats
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    return [];
+  },
+
+  getProposalById: async (proposalId: string) => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/proposals/${proposalId}`);
+    return response.data.data || response.data;
+  },
+
+  approveProposal: async (proposalId: string, payload: { comments?: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/proposals/${proposalId}/approve`,
+      payload
+    );
+    return response.data;
+  },
+
+  rejectProposal: async (proposalId: string, payload: { reason: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/proposals/${proposalId}/reject`,
+      payload
+    );
+    return response.data;
+  },
+
+  addProposalComment: async (proposalId: string, payload: { comment: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/proposals/${proposalId}/comment`,
+      payload
+    );
+    return response.data;
+  },
 };

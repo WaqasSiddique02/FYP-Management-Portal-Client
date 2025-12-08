@@ -65,6 +65,27 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
     ? supervisorNavItems 
     : coordinatorNavItems;
 
+  // Color scheme based on role
+  const colorScheme = role === 'supervisor' 
+    ? {
+        primary: 'text-green-600',
+        bgPrimary: 'bg-green-50',
+        hoverBg: 'hover:bg-green-50',
+        hoverText: 'hover:text-green-600',
+        helpBg: 'bg-green-50',
+        helpTextPrimary: 'text-green-900',
+        helpTextSecondary: 'text-green-700',
+      }
+    : {
+        primary: 'text-blue-600',
+        bgPrimary: 'bg-blue-50',
+        hoverBg: 'hover:bg-blue-50',
+        hoverText: 'hover:text-blue-600',
+        helpBg: 'bg-blue-50',
+        helpTextPrimary: 'text-blue-900',
+        helpTextSecondary: 'text-blue-700',
+      };
+
   const sidebarClasses = isMobile 
     ? "flex flex-col w-64 bg-white border-r border-gray-200 h-screen"
     : "hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0";
@@ -73,8 +94,8 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
     <aside className={sidebarClasses}>
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-green-600" />
-          <h2 className="text-xl font-bold text-green-600">FYP Portal</h2>
+          <GraduationCap className={`h-6 w-6 ${colorScheme.primary}`} />
+          <h2 className={`text-xl font-bold ${colorScheme.primary}`}>FYP Portal</h2>
         </div>
       </div>
       
@@ -90,8 +111,8 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
               className={cn(
                 'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
                 isActive 
-                  ? 'bg-green-50 text-green-600 font-medium' 
-                  : 'text-gray-700 hover:bg-green-50 hover:text-green-600'
+                  ? `${colorScheme.bgPrimary} ${colorScheme.primary} font-medium` 
+                  : `text-gray-700 ${colorScheme.hoverBg} ${colorScheme.hoverText}`
               )}
             >
               <Icon className="h-5 w-5" />
@@ -102,9 +123,9 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
       </nav>
       
       <div className="p-4 border-t border-gray-200">
-        <div className="bg-green-50 rounded-lg p-4">
-          <p className="text-xs font-medium text-green-900">Need Help?</p>
-          <p className="text-xs text-green-700 mt-1">Contact your coordinator</p>
+        <div className={`${colorScheme.helpBg} rounded-lg p-4`}>
+          <p className={`text-xs font-medium ${colorScheme.helpTextPrimary}`}>Need Help?</p>
+          <p className={`text-xs ${colorScheme.helpTextSecondary} mt-1`}>Contact your coordinator</p>
         </div>
       </div>
     </aside>
