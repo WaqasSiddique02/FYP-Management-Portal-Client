@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import SupervisorStatsCards from '@/components/dashboard/SupervisorStatsCards';
-import AssignedGroupsList from '@/components/dashboard/AssignedGroupsList';
 import RecentActivityList from '@/components/dashboard/RecentActivityList';
-import PendingWorkOverview from '@/components/dashboard/PendingWorkOverview';
-import ProjectIdeasSummary from '@/components/dashboard/ProjectIdeasSummary';
 import WorkloadSummary from '@/components/dashboard/WorkloadSummary';
 import SupervisorCharts from '@/components/dashboard/SupervisorCharts';
 import { supervisorApi } from '@/lib/api/supervisor.api';
@@ -134,7 +131,7 @@ export default function SupervisorDashboard() {
           evaluations={dashboardData.evaluations}
         />
 
-        {/* Main Content Grid */}
+        {/* Activity and Workload Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Activity */}
           <RecentActivityList activities={dashboardData.recentActivity.activities} />
@@ -145,9 +142,6 @@ export default function SupervisorDashboard() {
             evaluations={dashboardData.evaluations}
           />
         </div>
-
-        {/* Assigned Groups List */}
-        <AssignedGroupsList groups={dashboardData.assignedGroups.groups} />
       </div>
     </DashboardLayout>
   );

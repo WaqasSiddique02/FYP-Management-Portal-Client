@@ -25,6 +25,7 @@ export interface GroupMember {
   id: string;
   name: string;
   email: string;
+  rollNumber?: string;
 }
 
 export interface PendingWork {
@@ -69,3 +70,46 @@ export interface SupervisorDashboardResponse {
   data: SupervisorDashboardData;
   timestamp: string;
 }
+
+// Extended Group Details
+export interface GroupDetails {
+  id: string;
+  name: string;
+  leader: GroupMember;
+  members: GroupMember[];
+  projectTitle: string;
+  projectIdea?: ProjectIdea;
+  status: string;
+  createdAt: string;
+}
+
+export interface ProjectIdea {
+  id?: string;
+  title: string;
+  description: string;
+  isCustomIdea: boolean;
+  ideaStatus: 'pending' | 'approved' | 'rejected';
+  supervisorComment?: string;
+  customIdeaTitle?: string;
+  customIdeaDescription?: string;
+  selectedIdeaId?: string;
+}
+
+export interface ApproveIdeaPayload {
+  comment?: string;
+}
+
+export interface RejectIdeaPayload {
+  comment: string;
+}
+
+export interface GroupsListResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    groups: GroupDetails[];
+    total: number;
+  };
+  timestamp: string;
+}
+
