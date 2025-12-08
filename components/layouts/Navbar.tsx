@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +25,11 @@ interface NavbarProps {
 export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
   const { logout } = useAuth();
   const { user } = useAuthContext();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getInitials = (name: string) => {
     if (!name) return 'U';
@@ -40,6 +45,62 @@ export default function Navbar({ onMenuClick, sidebarContent }: NavbarProps) {
     }
     return user.name || 'User';
   };
+
+  // Prevent hydration mismatch by not rendering user-specific content until mounted
+  if (!mounted) {
+    return (
+      <header className="sticky top-0 z-40 w-full border-b bg-white">
+        <div className="flex h-16 items-center justify-between px-4 lg:px-6">
+          <div className="flex items-center gap-3">
+            <Sheet>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-64">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <SheetDescription className="sr-only">
+                  Main navigation menu for the FYP Management Portal
+                </SheetDescription>
+                {sidebarContent}
+              </SheetContent>
+            </Sheet>
+            
+            <div className="lg:hidden">
+              <h2 className="text-lg font-bold text-blue-600">FYP Portal</h2>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2 px-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-blue-100 text-blue-600 text-xs font-medium">
+                      U
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="hidden md:flex flex-col items-start">
+                    <span className="text-sm font-medium">User</span>
+                    <span className="text-xs text-gray-500 capitalize">Role</span>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span className="font-medium">User</span>
+                    <span className="text-xs text-gray-500">Loading...</span>
+                  </div>
+                </DropdownMenuLabel>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white">

@@ -14,6 +14,7 @@ export const ENDPOINTS = {
     PROFILE: `${API_BASE_URL}/auth/supervisor/profile`,
     SET_PASSWORD: `${API_BASE_URL}/auth/supervisor/set-password`,
     UPDATE_PROFILE: `${API_BASE_URL}/auth/supervisor/profile`,
+    DASHBOARD: `${API_BASE_URL}/dashboard/supervisor`,
   },
   COORDINATOR: {
     LOGIN: `${API_BASE_URL}/auth/coordinator/login`,

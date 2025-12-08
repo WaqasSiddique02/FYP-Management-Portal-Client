@@ -3,11 +3,13 @@ import { useRouter } from 'next/navigation';
 import { authAPI } from '../api/auth.api';
 import { setToken, setUserData, removeToken } from '../utils/token';
 import { LoginCredentials, StudentRegisterData } from '../types/auth.types';
+import { useAuthContext } from '../contexts/AuthContext';
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { setUser, setToken: setContextToken } = useAuthContext();
 
   const loginStudent = async (credentials: LoginCredentials, rememberMe: boolean = false) => {
     try {
@@ -21,6 +23,10 @@ export const useAuth = () => {
       
       setToken(response.token, rememberMe);
       setUserData(response.user, rememberMe);
+      
+      // Update AuthContext state
+      setContextToken(response.token);
+      setUser(response.user);
       
       // Small delay to ensure state is saved before navigation
       await new Promise(resolve => setTimeout(resolve, 200));
@@ -42,6 +48,10 @@ export const useAuth = () => {
       setToken(response.token, rememberMe);
       setUserData(response.user, rememberMe);
       
+      // Update AuthContext state
+      setContextToken(response.token);
+      setUser(response.user);
+      
       // Small delay to ensure state is saved before navigation
       await new Promise(resolve => setTimeout(resolve, 100));
       router.replace('/supervisor/dashboard');
@@ -61,6 +71,10 @@ export const useAuth = () => {
       const response = await authAPI.coordinator.login(credentials);
       setToken(response.token, rememberMe);
       setUserData(response.user, rememberMe);
+      
+      // Update AuthContext state
+      setContextToken(response.token);
+      setUser(response.user);
       
       // Small delay to ensure state is saved before navigation
       await new Promise(resolve => setTimeout(resolve, 100));

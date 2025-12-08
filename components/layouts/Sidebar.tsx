@@ -63,11 +63,12 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
     ? supervisorNavItems 
     : coordinatorNavItems;
 
+  const sidebarClasses = isMobile 
+    ? "flex flex-col w-64 bg-white border-r border-gray-200 h-screen"
+    : "hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 h-screen sticky top-0";
+
   return (
-    <aside className={cn(
-      "flex flex-col w-64 bg-white border-r border-gray-200 h-screen",
-      isMobile ? "" : "hidden lg:flex sticky top-0"
-    )}>
+    <aside className={sidebarClasses}>
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <GraduationCap className="h-6 w-6 text-blue-600" />
