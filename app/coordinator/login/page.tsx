@@ -26,7 +26,7 @@ export default function CoordinatorLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-600 to-purple-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-purple-400 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div className="grid md:grid-cols-2">
           <div className="bg-linear-to-br from-purple-50 to-purple-100 w-full h-full">

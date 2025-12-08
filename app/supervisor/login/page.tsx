@@ -26,7 +26,7 @@ export default function SupervisorLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-green-600 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-green-300 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div className="grid md:grid-cols-2">
           <div className="bg-linear-to-br from-green-50 to-green-100 flex">
