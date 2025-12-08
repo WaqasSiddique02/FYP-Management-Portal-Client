@@ -162,4 +162,99 @@ export const supervisorApi = {
     );
     return response.data;
   },
+
+  // Documents Management
+  getDocuments: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/documents`);
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    return [];
+  },
+
+  downloadDocument: async (documentId: string) => {
+    const response = await apiClient.get(
+      `${API_BASE_URL}/supervisor/documents/${documentId}/download`,
+      { responseType: 'blob' }
+    );
+    // Create download link
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'document.zip');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    return response.data;
+  },
+
+  approveDocument: async (documentId: string, payload: { comments?: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/documents/${documentId}/approve`,
+      payload
+    );
+    return response.data;
+  },
+
+  rejectDocument: async (documentId: string, payload: { reason: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/documents/${documentId}/reject`,
+      payload
+    );
+    return response.data;
+  },
+
+  addDocumentFeedback: async (documentId: string, payload: { feedback: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/documents/${documentId}/feedback`,
+      payload
+    );
+    return response.data;
+  },
+
+  // Evaluations Management
+  getFinalEvaluations: async () => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/final-evaluations`);
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    if (response.data?.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    return [];
+  },
+
+  addFinalMarks: async (projectId: string, payload: {
+    proposalMarks: number;
+    implementationMarks: number;
+    documentationMarks: number;
+    presentationMarks: number;
+    githubMarks: number;
+    totalMarks: number;
+  }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/final-evaluations/${projectId}/marks`,
+      payload
+    );
+    return response.data;
+  },
+
+  addFinalFeedback: async (projectId: string, payload: { feedback: string }) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/final-evaluations/${projectId}/feedback`,
+      payload
+    );
+    return response.data;
+  },
+
+  completeEvaluation: async (projectId: string) => {
+    const response = await apiClient.put(
+      `${API_BASE_URL}/supervisor/final-evaluations/${projectId}/complete`
+    );
+    return response.data;
+  },
 };
