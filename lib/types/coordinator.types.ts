@@ -85,3 +85,89 @@ export interface ProjectDetailData {
   data: Project;
   timestamp: string;
 }
+
+// Announcement Types
+export interface Announcement {
+  _id: string;
+  title: string;
+  content: string;
+  department: string;
+  createdBy: AnnouncementCreator;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+export interface AnnouncementCreator {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface CreateAnnouncementDto {
+  title: string;
+  content: string;
+  department: string;
+}
+
+export interface UpdateAnnouncementDto {
+  title?: string;
+  content?: string;
+}
+
+export interface AnnouncementResponse {
+  message: string;
+  announcement: Announcement;
+}
+
+export interface DeleteAnnouncementResponse {
+  message: string;
+}
+
+// Evaluation Panel Types
+export interface EvaluationPanel {
+  _id: string;
+  name: string;
+  department: string;
+  members: PanelMember[];
+  createdBy: AnnouncementCreator;
+  description?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+export interface PanelMember {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  designation: string;
+  department: string;
+  specialization?: string;
+}
+
+export interface CreatePanelDto {
+  name: string;
+  department: string;
+  members: string[];
+  description?: string;
+}
+
+export interface UpdatePanelDto {
+  name?: string;
+  members?: string[];
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface PanelResponse {
+  message: string;
+  panel: EvaluationPanel;
+}
+
+export interface DeletePanelResponse {
+  message: string;
+}

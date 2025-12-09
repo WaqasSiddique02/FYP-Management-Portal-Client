@@ -19,7 +19,8 @@ import {
   Calendar,
   User,
   Lightbulb,
-  Building2
+  Building2,
+  Megaphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -54,6 +55,8 @@ const coordinatorNavItems = [
   { href: '/coordinator/management', label: 'System Management', icon: Building2 },
   { href: '/coordinator/groups', label: 'Groups', icon: Users },
   { href: '/coordinator/projects', label: 'Project Monitoring', icon: FolderOpen },
+  { href: '/coordinator/panels', label: 'Evaluation Panels', icon: GraduationCap },
+  { href: '/coordinator/announcements', label: 'Announcements', icon: Megaphone },
   { href: '/coordinator/students', label: 'Students', icon: Users },
   { href: '/coordinator/supervisors', label: 'Supervisors', icon: Users },
   { href: '/coordinator/reports', label: 'Reports', icon: FileText },

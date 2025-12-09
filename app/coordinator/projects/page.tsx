@@ -30,7 +30,8 @@ import {
   Eye,
   Github,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  FolderOpen
 } from 'lucide-react';
 
 export default function ProjectMonitoringPage() {
@@ -149,13 +150,20 @@ export default function ProjectMonitoringPage() {
 
   return (
     <DashboardLayout role="coordinator">
-      <div className="p-6 space-y-6">
+      <div className="space-y-6 pb-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Project Monitoring</h1>
-        <p className="text-muted-foreground mt-2">
-          Overview and monitoring of all FYP projects in the department
-        </p>
+      <div className="bg-indigo-700 border border-indigo-600 rounded-xl p-6 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="bg-indigo-600 p-3 rounded-xl">
+            <FolderOpen className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-white">Project Monitoring</h1>
+            <p className="text-indigo-100 mt-1">
+              Overview and monitoring of all FYP projects in the department
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Statistics Cards */}

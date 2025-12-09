@@ -1,5 +1,18 @@
 import apiClient from './axios';
-import { ProjectMonitoringData, ProjectDetailData } from '../types/coordinator.types';
+import { 
+  ProjectMonitoringData, 
+  ProjectDetailData,
+  Announcement,
+  CreateAnnouncementDto,
+  UpdateAnnouncementDto,
+  AnnouncementResponse,
+  DeleteAnnouncementResponse,
+  EvaluationPanel,
+  CreatePanelDto,
+  UpdatePanelDto,
+  PanelResponse,
+  DeletePanelResponse
+} from '../types/coordinator.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
 
@@ -72,6 +85,61 @@ export const coordinatorApi = {
 
   getProjectById: async (projectId: string): Promise<ProjectDetailData> => {
     const response = await apiClient.get(`${API_BASE_URL}/projects/${projectId}`);
+    return response.data;
+  },
+
+  // Announcement APIs
+  createAnnouncement: async (data: CreateAnnouncementDto): Promise<AnnouncementResponse> => {
+    const response = await apiClient.post(`${API_BASE_URL}/announcements`, data);
+    return response.data;
+  },
+
+  getAllAnnouncements: async (department?: string): Promise<Announcement[]> => {
+    const url = department 
+      ? `${API_BASE_URL}/announcements?department=${department}`
+      : `${API_BASE_URL}/announcements`;
+    const response = await apiClient.get(url);
+    return response.data.data;
+  },
+
+  getAnnouncementById: async (id: string): Promise<Announcement> => {
+    const response = await apiClient.get(`${API_BASE_URL}/announcements/${id}`);
+    return response.data;
+  },
+
+  updateAnnouncement: async (id: string, data: UpdateAnnouncementDto): Promise<AnnouncementResponse> => {
+    const response = await apiClient.put(`${API_BASE_URL}/announcements/${id}`, data);
+    return response.data;
+  },
+
+  deleteAnnouncement: async (id: string): Promise<DeleteAnnouncementResponse> => {
+    const response = await apiClient.delete(`${API_BASE_URL}/announcements/${id}`);
+    return response.data;
+  },
+
+  // Evaluation Panel APIs
+  createPanel: async (data: CreatePanelDto): Promise<PanelResponse> => {
+    const response = await apiClient.post(`${API_BASE_URL}/panels`, data);
+    return response.data;
+  },
+
+  getAllPanels: async (): Promise<EvaluationPanel[]> => {
+    const response = await apiClient.get(`${API_BASE_URL}/panels`);
+    return response.data.data;
+  },
+
+  getPanelById: async (id: string): Promise<EvaluationPanel> => {
+    const response = await apiClient.get(`${API_BASE_URL}/panels/${id}`);
+    return response.data.data;
+  },
+
+  updatePanel: async (id: string, data: UpdatePanelDto): Promise<PanelResponse> => {
+    const response = await apiClient.put(`${API_BASE_URL}/panels/${id}`, data);
+    return response.data;
+  },
+
+  deletePanel: async (id: string): Promise<DeletePanelResponse> => {
+    const response = await apiClient.delete(`${API_BASE_URL}/panels/${id}`);
     return response.data;
   },
 };
