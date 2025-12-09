@@ -1,4 +1,5 @@
 import apiClient from './axios';
+import { ProjectMonitoringData, ProjectDetailData } from '../types/coordinator.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
 
@@ -61,5 +62,16 @@ export const coordinatorApi = {
       isAvailable
     });
     return response.data?.data || response.data;
+  },
+
+  // Project Monitoring APIs
+  getAllProjects: async (): Promise<ProjectMonitoringData> => {
+    const response = await apiClient.get(`${API_BASE_URL}/projects`);
+    return response.data;
+  },
+
+  getProjectById: async (projectId: string): Promise<ProjectDetailData> => {
+    const response = await apiClient.get(`${API_BASE_URL}/projects/${projectId}`);
+    return response.data;
   },
 };

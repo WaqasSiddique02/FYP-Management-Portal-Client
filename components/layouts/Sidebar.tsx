@@ -53,9 +53,9 @@ const coordinatorNavItems = [
   { href: '/coordinator/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/coordinator/management', label: 'System Management', icon: Building2 },
   { href: '/coordinator/groups', label: 'Groups', icon: Users },
+  { href: '/coordinator/projects', label: 'Project Monitoring', icon: FolderOpen },
   { href: '/coordinator/students', label: 'Students', icon: Users },
   { href: '/coordinator/supervisors', label: 'Supervisors', icon: Users },
-  { href: '/coordinator/projects', label: 'Projects', icon: BookOpen },
   { href: '/coordinator/reports', label: 'Reports', icon: FileText },
   { href: '/coordinator/settings', label: 'Settings', icon: Settings },
 ];
