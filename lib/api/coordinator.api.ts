@@ -11,7 +11,16 @@ import {
   CreatePanelDto,
   UpdatePanelDto,
   PanelResponse,
-  DeletePanelResponse
+  DeletePanelResponse,
+  PresentationSchedule,
+  CreateScheduleDto,
+  UpdateScheduleDto,
+  AutoScheduleDto,
+  SwapScheduleDto,
+  ScheduleResponse,
+  AutoScheduleResponse,
+  SwapScheduleResponse,
+  DeleteScheduleResponse
 } from '../types/coordinator.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
@@ -140,6 +149,45 @@ export const coordinatorApi = {
 
   deletePanel: async (id: string): Promise<DeletePanelResponse> => {
     const response = await apiClient.delete(`${API_BASE_URL}/panels/${id}`);
+    return response.data;
+  },
+
+  // Presentation Schedule APIs
+  createSchedule: async (data: CreateScheduleDto): Promise<ScheduleResponse> => {
+    const response = await apiClient.post(`${API_BASE_URL}/schedules`, data);
+    return response.data;
+  },
+
+  getAllSchedules: async (date?: string): Promise<PresentationSchedule[]> => {
+    const url = date 
+      ? `${API_BASE_URL}/schedules?date=${date}`
+      : `${API_BASE_URL}/schedules`;
+    const response = await apiClient.get(url);
+    return response.data.data;
+  },
+
+  getScheduleById: async (id: string): Promise<PresentationSchedule> => {
+    const response = await apiClient.get(`${API_BASE_URL}/schedules/${id}`);
+    return response.data.data;
+  },
+
+  updateSchedule: async (id: string, data: UpdateScheduleDto): Promise<ScheduleResponse> => {
+    const response = await apiClient.put(`${API_BASE_URL}/schedules/${id}`, data);
+    return response.data;
+  },
+
+  deleteSchedule: async (id: string): Promise<DeleteScheduleResponse> => {
+    const response = await apiClient.delete(`${API_BASE_URL}/schedules/${id}`);
+    return response.data;
+  },
+
+  autoSchedule: async (data: AutoScheduleDto): Promise<AutoScheduleResponse> => {
+    const response = await apiClient.post(`${API_BASE_URL}/schedules/auto-schedule`, data);
+    return response.data;
+  },
+
+  swapSchedules: async (data: SwapScheduleDto): Promise<SwapScheduleResponse> => {
+    const response = await apiClient.post(`${API_BASE_URL}/schedules/swap`, data);
     return response.data;
   },
 };

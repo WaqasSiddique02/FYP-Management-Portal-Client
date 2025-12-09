@@ -20,7 +20,8 @@ import {
   User,
   Lightbulb,
   Building2,
-  Megaphone
+  Megaphone,
+  CalendarDays
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,6 +57,7 @@ const coordinatorNavItems = [
   { href: '/coordinator/groups', label: 'Groups', icon: Users },
   { href: '/coordinator/projects', label: 'Project Monitoring', icon: FolderOpen },
   { href: '/coordinator/panels', label: 'Evaluation Panels', icon: GraduationCap },
+  { href: '/coordinator/schedules', label: 'Demo Scheduling', icon: CalendarDays },
   { href: '/coordinator/announcements', label: 'Announcements', icon: Megaphone },
   { href: '/coordinator/students', label: 'Students', icon: Users },
   { href: '/coordinator/supervisors', label: 'Supervisors', icon: Users },

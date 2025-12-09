@@ -171,3 +171,86 @@ export interface PanelResponse {
 export interface DeletePanelResponse {
   message: string;
 }
+
+// Presentation Schedule Types
+export interface PresentationSchedule {
+  _id: string;
+  group: ScheduleGroup;
+  panel: SchedulePanel;
+  date: string;
+  timeSlot: string;
+  room: string;
+  department: string;
+  notes?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+export interface ScheduleGroup {
+  _id: string;
+  name: string;
+  leader: Student;
+  members: Student[];
+  department: string;
+  id: string;
+}
+
+export interface SchedulePanel {
+  _id: string;
+  name: string;
+  members: PanelMember[];
+  id: string;
+}
+
+export interface CreateScheduleDto {
+  groupId: string;
+  panelId: string;
+  date: string;
+  timeSlot: string;
+  room: string;
+  department: string;
+  notes?: string;
+}
+
+export interface UpdateScheduleDto {
+  panelId?: string;
+  date?: string;
+  timeSlot?: string;
+  room?: string;
+  notes?: string;
+}
+
+export interface AutoScheduleDto {
+  date: string;
+  room: string;
+  department: string;
+  panelId: string;
+}
+
+export interface SwapScheduleDto {
+  scheduleId1: string;
+  scheduleId2: string;
+}
+
+export interface ScheduleResponse {
+  message: string;
+  schedule: PresentationSchedule;
+}
+
+export interface AutoScheduleResponse {
+  message: string;
+  totalGroupsScheduled: number;
+  remainingGroups: number;
+  schedules: PresentationSchedule[];
+}
+
+export interface SwapScheduleResponse {
+  message: string;
+  schedules: [PresentationSchedule, PresentationSchedule];
+}
+
+export interface DeleteScheduleResponse {
+  message: string;
+}
