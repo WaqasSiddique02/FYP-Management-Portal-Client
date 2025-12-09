@@ -77,6 +77,16 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
         helpTextPrimary: 'text-green-900',
         helpTextSecondary: 'text-green-700',
       }
+    : role === 'coordinator'
+    ? {
+        primary: 'text-purple-600',
+        bgPrimary: 'bg-purple-50',
+        hoverBg: 'hover:bg-purple-50',
+        hoverText: 'hover:text-purple-600',
+        helpBg: 'bg-purple-50',
+        helpTextPrimary: 'text-purple-900',
+        helpTextSecondary: 'text-purple-700',
+      }
     : {
         primary: 'text-blue-600',
         bgPrimary: 'bg-blue-50',

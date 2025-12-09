@@ -263,18 +263,18 @@ export default function CoordinatorDashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-purple-600 uppercase tracking-wide">
+                  <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
                     FYP Registered
                   </p>
-                  <p className="text-3xl font-bold text-purple-900 mt-2">
+                  <p className="text-3xl font-bold text-gray-900 mt-2">
                     {data.usersSummary.studentsRegisteredForFYP}
                   </p>
-                  <p className="text-xs text-purple-600 mt-1">
+                  <p className="text-xs text-gray-600 mt-1">
                     of {data.usersSummary.totalStudents} students
                   </p>
                 </div>
                 <div className="bg-purple-200 p-4 rounded-xl">
-                  <UserCheck className="h-8 w-8 text-purple-700" />
+                  <UserCheck className="h-8 w-8 text-orange-4 00" />
                 </div>
               </div>
             </CardContent>
@@ -294,7 +294,7 @@ export default function CoordinatorDashboardPage() {
                   <p className="text-xs text-slate-500 mt-1">Active faculty</p>
                 </div>
                 <div className="bg-purple-100 p-4 rounded-xl">
-                  <Briefcase className="h-8 w-8 text-purple-600" />
+                  <Briefcase className="h-8 w-8 text-red-600" />
                 </div>
               </div>
             </CardContent>
@@ -340,7 +340,7 @@ export default function CoordinatorDashboardPage() {
                   </p>
                 </div>
                 <div className="bg-purple-100 p-4 rounded-xl">
-                  <Award className="h-8 w-8 text-purple-600" />
+                  <Award className="h-8 w-8 text-green-600" />
                 </div>
               </div>
             </CardContent>
@@ -352,8 +352,8 @@ export default function CoordinatorDashboardPage() {
           {/* Student Registration Pie Chart */}
           <Card className="border-purple-200">
             <CardHeader className="border-b border-purple-100 bg-purple-50">
-              <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-                <GraduationCap className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <GraduationCap className="h-5 w-5 text-gray-900" />
                 Student Registration Status
               </CardTitle>
             </CardHeader>
@@ -401,8 +401,8 @@ export default function CoordinatorDashboardPage() {
           {/* Group Distribution Pie Chart */}
           <Card className="border-purple-200">
             <CardHeader className="border-b border-purple-100 bg-purple-50">
-              <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Users className="h-5 w-5 text-black-600" />
                 Group Distribution
               </CardTitle>
             </CardHeader>
@@ -455,8 +455,8 @@ export default function CoordinatorDashboardPage() {
           {/* Proposal Status Bar Chart */}
           <Card className="border-purple-200">
             <CardHeader className="border-b border-purple-100 bg-purple-50">
-              <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-                <FileText className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <FileText className="h-5 w-5 text-gray-600" />
                 Proposal Status
               </CardTitle>
             </CardHeader>
@@ -515,8 +515,8 @@ export default function CoordinatorDashboardPage() {
           {/* Project Selection Status */}
           <Card className="border-purple-200">
             <CardHeader className="border-b border-purple-100 bg-purple-50">
-              <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-gray-600" />
                 Project Selections
               </CardTitle>
             </CardHeader>
@@ -559,19 +559,19 @@ export default function CoordinatorDashboardPage() {
         {/* Documents Summary Card */}
         <Card className="border-purple-200">
           <CardHeader className="border-b border-purple-100 bg-purple-50">
-            <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-              <FileText className="h-5 w-5 text-purple-600" />
+            <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-gray-600" />
               Documents Overview
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-purple-50 rounded-xl border border-purple-200">
-                <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-purple-900">
+                <FileText className="h-8 w-8 text-red-500 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-red-500">
                   {data.proposalsAndDocuments.documentSummary.documentsUploaded}
                 </p>
-                <p className="text-xs text-purple-600 mt-1">
+                <p className="text-xs text-red-500 mt-1">
                   Documents Uploaded
                 </p>
               </div>
@@ -612,8 +612,8 @@ export default function CoordinatorDashboardPage() {
           {/* Supervisor Availability */}
           <Card className="border-purple-200">
             <CardHeader className="border-b border-purple-100 bg-purple-50">
-              <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Users className="h-5 w-5 text-gray-600" />
                 Supervisor Availability
               </CardTitle>
             </CardHeader>
@@ -688,8 +688,8 @@ export default function CoordinatorDashboardPage() {
           {/* Recent Announcements */}
           <Card className="border-purple-200">
             <CardHeader className="border-b border-purple-100 bg-purple-50">
-              <CardTitle className="text-lg font-bold text-purple-900 flex items-center gap-2">
-                <Megaphone className="h-5 w-5 text-purple-600" />
+              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-gray-600" />
                 Recent Announcements
               </CardTitle>
             </CardHeader>
