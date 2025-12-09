@@ -18,7 +18,8 @@ import {
   BarChart3,
   Calendar,
   User,
-  Lightbulb
+  Lightbulb,
+  Building2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -50,6 +51,7 @@ const supervisorNavItems = [
 
 const coordinatorNavItems = [
   { href: '/coordinator/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/coordinator/management', label: 'Departments & Faculty', icon: Building2 },
   { href: '/coordinator/students', label: 'Students', icon: Users },
   { href: '/coordinator/supervisors', label: 'Supervisors', icon: Users },
   { href: '/coordinator/projects', label: 'Projects', icon: BookOpen },
