@@ -51,7 +51,7 @@ const supervisorNavItems = [
 
 const coordinatorNavItems = [
   { href: '/coordinator/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/coordinator/management', label: 'Departments & Faculty', icon: Building2 },
+  { href: '/coordinator/management', label: 'System Management', icon: Building2 },
   { href: '/coordinator/students', label: 'Students', icon: Users },
   { href: '/coordinator/supervisors', label: 'Supervisors', icon: Users },
   { href: '/coordinator/projects', label: 'Projects', icon: BookOpen },
@@ -81,13 +81,13 @@ export default function Sidebar({ role, isMobile = false }: SidebarProps) {
       }
     : role === 'coordinator'
     ? {
-        primary: 'text-purple-600',
-        bgPrimary: 'bg-purple-50',
-        hoverBg: 'hover:bg-purple-50',
-        hoverText: 'hover:text-purple-600',
-        helpBg: 'bg-purple-50',
-        helpTextPrimary: 'text-purple-900',
-        helpTextSecondary: 'text-purple-700',
+        primary: 'text-indigo-600',
+        bgPrimary: 'bg-indigo-50',
+        hoverBg: 'hover:bg-indigo-50',
+        hoverText: 'hover:text-indigo-600',
+        helpBg: 'bg-indigo-50',
+        helpTextPrimary: 'text-indigo-900',
+        helpTextSecondary: 'text-indigo-700',
       }
     : {
         primary: 'text-blue-600',

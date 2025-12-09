@@ -36,8 +36,8 @@ export default function Navbar({ role, onMenuClick, sidebarContent }: NavbarProp
       }
     : role === 'coordinator'
     ? {
-        primary: 'text-purple-600',
-        bgPrimary: 'bg-purple-100',
+        primary: 'text-indigo-600',
+        bgPrimary: 'bg-indigo-100',
       }
     : {
         primary: 'text-blue-600',

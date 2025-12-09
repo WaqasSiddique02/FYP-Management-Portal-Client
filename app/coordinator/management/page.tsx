@@ -45,6 +45,11 @@ import {
   MoreVertical,
   Plus,
   TrendingUp,
+  GraduationCap,
+  BookOpen,
+  Calendar,
+  Activity,
+  BarChart3,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -86,6 +91,27 @@ interface Faculty {
   officeHours?: string;
 }
 
+interface Student {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  rollNumber?: string;
+  department?: string;
+  semester?: number;
+  cgpa?: number;
+  groupName?: string;
+  supervisor?: string;
+  createdAt?: string;
+}
+
+interface UserSummary {
+  totalUsers: number;
+  totalStudents: number;
+  totalSupervisors: number;
+  activeUsers: number;
+}
+
 export default function ManagementPage() {
   const { user, loading: authLoading } = useAuthContext();
 
@@ -114,6 +140,18 @@ export default function ManagementPage() {
   // Loading States
   const [loadingDepartments, setLoadingDepartments] = useState(true);
   const [loadingFaculties, setLoadingFaculties] = useState(true);
+  const [loadingStudents, setLoadingStudents] = useState(true);
+  const [loadingUserSummary, setLoadingUserSummary] = useState(true);
+
+  // Users & Students States
+  const [students, setStudents] = useState<Student[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+  const [studentSearchQuery, setStudentSearchQuery] = useState("");
+  const [filterStudentDepartment, setFilterStudentDepartment] = useState("all");
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [viewStudentOpen, setViewStudentOpen] = useState(false);
+  const [deleteStudentOpen, setDeleteStudentOpen] = useState(false);
+  const [userSummary, setUserSummary] = useState<UserSummary | null>(null);
 
   // Form States
   const [newDepartment, setNewDepartment] = useState({
@@ -144,6 +182,20 @@ export default function ManagementPage() {
   useEffect(() => {
     if (!authLoading && user) {
       fetchAllFaculties();
+    }
+  }, [authLoading, user]);
+
+  // Fetch User Summary
+  useEffect(() => {
+    if (!authLoading && user) {
+      fetchUserSummary();
+    }
+  }, [authLoading, user]);
+
+  // Fetch Students
+  useEffect(() => {
+    if (!authLoading && user) {
+      fetchAllStudents();
     }
   }, [authLoading, user]);
 
@@ -251,6 +303,114 @@ export default function ManagementPage() {
     }
   };
 
+  // Fetch User Summary
+  const fetchUserSummary = async () => {
+    try {
+      setLoadingUserSummary(true);
+      const response = await apiClient.get(`${API_BASE_URL}/users/summary`);
+      const data = response.data?.data || response.data;
+      
+      // Map backend structure to frontend structure
+      const studentCount = data.students?.total || 0;
+      const supervisorCount = data.supervisors?.total || 0;
+      
+      const summary: UserSummary = {
+        totalUsers: studentCount + supervisorCount,
+        totalStudents: studentCount,
+        totalSupervisors: supervisorCount,
+        activeUsers: studentCount + supervisorCount,
+      };
+      
+      setUserSummary(summary);
+    } catch (error) {
+      console.error("Error fetching user summary:", error);
+      setUserSummary(null);
+    } finally {
+      setLoadingUserSummary(false);
+    }
+  };
+
+  // Fetch All Students
+  const fetchAllStudents = async () => {
+    try {
+      setLoadingStudents(true);
+      
+      // Fetch both students and groups in parallel
+      const [studentsResponse, groupsResponse] = await Promise.all([
+        apiClient.get(`${API_BASE_URL}/users`, { params: { role: 'student' } }),
+        apiClient.get(`${API_BASE_URL}/coordinator/groups`).catch(() => ({ data: [] }))
+      ]);
+      
+      // Extract students data
+      const studentsData = studentsResponse.data?.data || studentsResponse.data;
+      const usersArray = studentsData?.users || studentsData || [];
+      
+      // Extract groups data - backend returns array directly
+      const groupsArray = Array.isArray(groupsResponse.data) ? groupsResponse.data : [];
+      
+      // Create a map of student ID to their group and supervisor
+      const studentGroupMap = new Map();
+      
+      groupsArray.forEach((group: any) => {
+        const groupName = group.name || 'Unknown Group';
+        const supervisor = group.assignedSupervisor 
+          ? `${group.assignedSupervisor.firstName || ''} ${group.assignedSupervisor.lastName || ''}`.trim() || 'Supervisor'
+          : 'Not Assigned';
+        
+        // Add leader to map
+        if (group.leader && group.leader._id) {
+          studentGroupMap.set(group.leader._id, { groupName, supervisor });
+        }
+        
+        // Add all members to map
+        if (Array.isArray(group.members)) {
+          group.members.forEach((member: any) => {
+            if (member && member._id) {
+              studentGroupMap.set(member._id, { groupName, supervisor });
+            }
+          });
+        }
+      });
+      
+      // Map students with their group and supervisor info
+      const mappedStudents = Array.isArray(usersArray) ? usersArray.map((s: any) => {
+        const studentId = s._id || s.id;
+        const groupInfo = studentGroupMap.get(studentId);
+        
+        // Use assignedSupervisor from student if available, otherwise use group supervisor
+        let supervisor = 'Not Assigned';
+        if (s.assignedSupervisor && s.assignedSupervisor._id) {
+          supervisor = `${s.assignedSupervisor.firstName || ''} ${s.assignedSupervisor.lastName || ''}`.trim() || 'Supervisor';
+        } else if (groupInfo?.supervisor && groupInfo.supervisor !== 'Not Assigned') {
+          supervisor = groupInfo.supervisor;
+        }
+        
+        return {
+          _id: studentId,
+          name: s.fullName || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Unknown',
+          email: s.email || 'N/A',
+          phone: s.phoneNumber || s.phone || '',
+          rollNumber: s.rollNumber || 'N/A',
+          department: s.department || 'N/A',
+          semester: parseInt(s.semester) || 0,
+          cgpa: parseFloat(s.cgpa) || 0,
+          groupName: groupInfo?.groupName || 'No Group',
+          supervisor: supervisor,
+          createdAt: s.createdAt || '',
+        };
+      }) : [];
+      
+      setStudents(mappedStudents);
+      setFilteredStudents(mappedStudents);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      setStudents([]);
+      setFilteredStudents([]);
+    } finally {
+      setLoadingStudents(false);
+    }
+  };
+
   // Filter Departments
   useEffect(() => {
     let filtered = departments;
@@ -288,6 +448,26 @@ export default function ManagementPage() {
 
     setFilteredFaculties(filtered);
   }, [facultySearchQuery, filterDepartment, filterAvailability, faculties]);
+
+  // Filter Students
+  useEffect(() => {
+    let filtered = students;
+
+    if (studentSearchQuery) {
+      filtered = filtered.filter(
+        (student) =>
+          student.name?.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+          student.email?.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+          student.rollNumber?.toLowerCase().includes(studentSearchQuery.toLowerCase())
+      );
+    }
+
+    if (filterStudentDepartment !== "all") {
+      filtered = filtered.filter((student) => student.department === filterStudentDepartment);
+    }
+
+    setFilteredStudents(filtered);
+  }, [studentSearchQuery, filterStudentDepartment, students]);
 
   // Department CRUD Operations
   const handleAddDepartment = async () => {
@@ -391,6 +571,20 @@ export default function ManagementPage() {
     }
   };
 
+  // Student Operations
+  const handleDeleteStudent = async () => {
+    if (!selectedStudent) return;
+    try {
+      await apiClient.delete(`${API_BASE_URL}/users/${selectedStudent._id}`);
+      setDeleteStudentOpen(false);
+      await fetchAllStudents();
+      alert('Student deleted successfully!');
+    } catch (error: any) {
+      console.error("Error deleting student:", error);
+      alert(error.response?.data?.message || 'Failed to delete student');
+    }
+  };
+
   const departmentStats = {
     total: departments.length,
     withFaculty: departments.filter((d) => (d.totalFaculty || 0) > 0).length,
@@ -401,6 +595,13 @@ export default function ManagementPage() {
     total: faculties.length,
     available: faculties.filter((f) => f.isAvailable).length,
     unavailable: faculties.filter((f) => !f.isAvailable).length,
+  };
+
+  const studentStats = {
+    total: students.length,
+    withGroup: students.filter((s) => s.groupName !== 'No Group').length,
+    withoutGroup: students.filter((s) => s.groupName === 'No Group').length,
+    withSupervisor: students.filter((s) => s.supervisor !== 'Not Assigned').length,
   };
 
   if (authLoading) {
@@ -423,14 +624,14 @@ export default function ManagementPage() {
         <div className="bg-indigo-700 border border-indigo-600 rounded-xl p-6 shadow-lg">
           <div className="flex items-center gap-4">
             <div className="bg-indigo-600 p-3 rounded-xl">
-              <Building2 className="h-8 w-8 text-white" />
+              <Activity className="h-8 w-8 text-white" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">
-                Department & Faculty Management
+                System Management
               </h1>
               <p className="text-indigo-100 mt-1">
-                Manage departments, faculty members, and their assignments
+                Manage departments, faculty, students, and system users
               </p>
             </div>
           </div>
@@ -450,8 +651,22 @@ export default function ManagementPage() {
               value="faculty"
               className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md"
             >
-              <Users className="h-4 w-4 mr-2" />
+              <Briefcase className="h-4 w-4 mr-2" />
               Faculty
+            </TabsTrigger>
+            <TabsTrigger
+              value="users"
+              className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md"
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Users & Analytics
+            </TabsTrigger>
+            <TabsTrigger
+              value="students"
+              className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-md"
+            >
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Students
             </TabsTrigger>
           </TabsList>
 
@@ -1036,7 +1251,421 @@ export default function ManagementPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* USERS & ANALYTICS TAB */}
+          <TabsContent value="users" className="space-y-6">
+            {/* User Summary Analytics */}
+            {loadingUserSummary ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-700" />
+              </div>
+            ) : userSummary && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <Card className="border-indigo-300 bg-white shadow-md">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-indigo-600 uppercase tracking-wide mb-2">
+                          Total Users
+                        </p>
+                        <p className="text-4xl font-bold text-indigo-900">
+                          {userSummary.totalUsers || 0}
+                        </p>
+                      </div>
+                      <div className="bg-indigo-100 p-4 rounded-xl">
+                        <Users className="h-8 w-8 text-indigo-700" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-emerald-300 bg-white shadow-md">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-emerald-600 uppercase tracking-wide mb-2">
+                          Total Students
+                        </p>
+                        <p className="text-4xl font-bold text-emerald-900">
+                          {userSummary.totalStudents || 0}
+                        </p>
+                      </div>
+                      <div className="bg-emerald-100 p-4 rounded-xl">
+                        <GraduationCap className="h-8 w-8 text-emerald-700" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-purple-300 bg-white shadow-md">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-2">
+                          Total Supervisors
+                        </p>
+                        <p className="text-4xl font-bold text-purple-900">
+                          {userSummary.totalSupervisors || 0}
+                        </p>
+                      </div>
+                      <div className="bg-purple-100 p-4 rounded-xl">
+                        <Briefcase className="h-8 w-8 text-purple-700" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-teal-300 bg-white shadow-md">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-teal-600 uppercase tracking-wide mb-2">
+                          Active Users
+                        </p>
+                        <p className="text-4xl font-bold text-teal-900">
+                          {userSummary.activeUsers || 0}
+                        </p>
+                      </div>
+                      <div className="bg-teal-100 p-4 rounded-xl">
+                        <UserCheck className="h-8 w-8 text-teal-700" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* System Overview */}
+            <Card className="border-indigo-300 bg-white shadow-md">
+              <CardHeader className="border-b border-indigo-200 bg-indigo-50">
+                <CardTitle className="text-lg font-bold text-indigo-900">
+                  System Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center p-4 bg-linear-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
+                    <Building2 className="h-10 w-10 text-indigo-600 mx-auto mb-3" />
+                    <p className="text-2xl font-bold text-indigo-900">{departmentStats.total}</p>
+                    <p className="text-sm text-indigo-600 font-medium">Departments</p>
+                  </div>
+                  <div className="text-center p-4 bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                    <Briefcase className="h-10 w-10 text-emerald-600 mx-auto mb-3" />
+                    <p className="text-2xl font-bold text-emerald-900">{facultyStats.total}</p>
+                    <p className="text-sm text-emerald-600 font-medium">Faculty Members</p>
+                  </div>
+                  <div className="text-center p-4 bg-linear-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                    <GraduationCap className="h-10 w-10 text-purple-600 mx-auto mb-3" />
+                    <p className="text-2xl font-bold text-purple-900">{studentStats.total}</p>
+                    <p className="text-sm text-purple-600 font-medium">Students</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* STUDENTS TAB */}
+          <TabsContent value="students" className="space-y-6">
+            {/* Student Search and Filters */}
+            <Card className="border-slate-300 bg-white shadow-md">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500" />
+                      <Input
+                        placeholder="Search students by name, email, or roll number..."
+                        value={studentSearchQuery}
+                        onChange={(e) => setStudentSearchQuery(e.target.value)}
+                        className="pl-10 border-slate-300 bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full md:w-64">
+                    <Select value={filterStudentDepartment} onValueChange={setFilterStudentDepartment}>
+                      <SelectTrigger className="border-slate-300 bg-white">
+                        <SelectValue placeholder="All Departments" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="all">All Departments</SelectItem>
+                        {departments.map((dept) => (
+                          <SelectItem key={dept._id} value={dept.name}>
+                            {dept.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Students Table */}
+            <Card className="border-slate-300 bg-white shadow-md">
+              <CardHeader className="border-b border-slate-200 bg-slate-50">
+                <CardTitle className="text-lg font-bold text-slate-900">
+                  Students ({filteredStudents.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {loadingStudents ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="h-8 w-8 animate-spin text-slate-700" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Student
+                          </th>
+                          <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Contact
+                          </th>
+                          <th className="px-6 py-4 text-center text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Department
+                          </th>
+                          <th className="px-6 py-4 text-center text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {filteredStudents.map((student, index) => (
+                          <tr
+                            key={student._id}
+                            className={`hover:bg-slate-50 transition-colors ${
+                              index % 2 === 0 ? "bg-white" : "bg-slate-50/30"
+                            }`}
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="bg-indigo-100 p-2 rounded-lg">
+                                  <GraduationCap className="h-5 w-5 text-indigo-700" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-slate-900 text-sm">
+                                    {student.name}
+                                  </p>
+                                  <p className="text-xs text-slate-600">
+                                    {student.rollNumber}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-xs text-slate-600">
+                                  <Mail className="h-3 w-3" />
+                                  {student.email}
+                                </div>
+                                {student.phone && (
+                                  <div className="flex items-center gap-2 text-xs text-slate-600">
+                                    <Phone className="h-3 w-3" />
+                                    {student.phone}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <div className="space-y-1">
+                                <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                                  {student.department}
+                                </Badge>
+                                <p className="text-xs text-slate-600">Semester {student.semester}</p>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="hover:bg-slate-100"
+                                  >
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48 bg-white">
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedStudent(student);
+                                      setDeleteStudentOpen(true);
+                                    }}
+                                    className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete Student
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {filteredStudents.length === 0 && (
+                      <div className="text-center py-16">
+                        <GraduationCap className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                        <p className="text-slate-600 font-medium">No students found</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        {/* View Student Dialog */}
+        <Dialog open={viewStudentOpen} onOpenChange={setViewStudentOpen}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-indigo-900">
+                Student Details
+              </DialogTitle>
+            </DialogHeader>
+            {selectedStudent && (
+              <div className="space-y-4 py-4">
+                <div className="flex items-start gap-4 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+                  <div className="bg-indigo-200 p-4 rounded-xl">
+                    <GraduationCap className="h-8 w-8 text-indigo-700" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-indigo-900">
+                      {selectedStudent.name}
+                    </h3>
+                    <p className="text-sm text-indigo-700 font-medium mt-1">
+                      Roll Number: {selectedStudent.rollNumber}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-3 border border-indigo-200 rounded-lg bg-indigo-50">
+                    <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-1">
+                      Email
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-indigo-600" />
+                      <p className="text-sm font-medium text-indigo-900 truncate">
+                        {selectedStudent.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-3 border border-purple-200 rounded-lg bg-purple-50">
+                    <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-1">
+                      Phone
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-purple-600" />
+                      <p className="text-sm font-medium text-purple-900">
+                        {selectedStudent.phone || 'Not provided'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-3 border border-blue-200 rounded-lg bg-blue-50">
+                    <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">
+                      Department
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-blue-600" />
+                      <p className="text-sm font-medium text-blue-900">
+                        {selectedStudent.department}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-3 border border-teal-200 rounded-lg bg-teal-50">
+                    <p className="text-xs font-semibold text-teal-700 uppercase tracking-wide mb-1">
+                      Group
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-teal-600" />
+                      <p className="text-sm font-medium text-teal-900">
+                        {selectedStudent.groupName}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-3 border border-cyan-200 rounded-lg bg-cyan-50">
+                    <p className="text-xs font-semibold text-cyan-700 uppercase tracking-wide mb-1">
+                      Supervisor
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-cyan-600" />
+                      <p className="text-sm font-medium text-cyan-900">
+                        {selectedStudent.supervisor}
+                      </p>
+                    </div>
+                  </div>
+                  {selectedStudent.semester && (
+                    <div className="p-3 border border-pink-200 rounded-lg bg-pink-50">
+                      <p className="text-xs font-semibold text-pink-700 uppercase tracking-wide mb-1">
+                        Semester
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-pink-600" />
+                        <p className="text-sm font-medium text-pink-900">
+                          {selectedStudent.semester}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setViewStudentOpen(false)}
+                className="border-slate-300"
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Student Dialog */}
+        <Dialog open={deleteStudentOpen} onOpenChange={setDeleteStudentOpen}>
+          <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-red-900">
+                Delete Student
+              </DialogTitle>
+              <DialogDescription className="text-slate-600">
+                Are you sure you want to delete {selectedStudent?.name}?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                  <div className="text-sm text-red-800">
+                    <p className="font-semibold mb-1">Warning</p>
+                    <p>This action cannot be undone. All student data will be permanently deleted.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteStudentOpen(false)}
+                className="border-slate-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteStudent}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* View Faculty Dialog */}
         <Dialog open={viewFacultyOpen} onOpenChange={setViewFacultyOpen}>
