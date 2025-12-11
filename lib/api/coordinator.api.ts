@@ -20,7 +20,8 @@ import {
   ScheduleResponse,
   AutoScheduleResponse,
   SwapScheduleResponse,
-  DeleteScheduleResponse
+  DeleteScheduleResponse,
+  CoordinatorProfileResponse
 } from '../types/coordinator.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
@@ -188,6 +189,12 @@ export const coordinatorApi = {
 
   swapSchedules: async (data: SwapScheduleDto): Promise<SwapScheduleResponse> => {
     const response = await apiClient.post(`${API_BASE_URL}/schedules/swap`, data);
+    return response.data;
+  },
+
+  // Coordinator Profile API
+  getProfile: async (): Promise<CoordinatorProfileResponse> => {
+    const response = await apiClient.get(`${API_BASE_URL}/auth/coordinator/profile`);
     return response.data;
   },
 };

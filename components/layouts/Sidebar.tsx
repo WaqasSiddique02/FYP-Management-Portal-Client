@@ -59,10 +59,7 @@ const coordinatorNavItems = [
   { href: '/coordinator/panels', label: 'Evaluation Panels', icon: GraduationCap },
   { href: '/coordinator/schedules', label: 'Demo Scheduling', icon: CalendarDays },
   { href: '/coordinator/announcements', label: 'Announcements', icon: Megaphone },
-  { href: '/coordinator/students', label: 'Students', icon: Users },
-  { href: '/coordinator/supervisors', label: 'Supervisors', icon: Users },
-  { href: '/coordinator/reports', label: 'Reports', icon: FileText },
-  { href: '/coordinator/settings', label: 'Settings', icon: Settings },
+  { href: '/coordinator/profile', label: 'Profile', icon: User },
 ];
 
 export default function Sidebar({ role, isMobile = false }: SidebarProps) {

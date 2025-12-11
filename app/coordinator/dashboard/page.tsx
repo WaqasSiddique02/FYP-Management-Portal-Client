@@ -138,7 +138,7 @@ export default function CoordinatorDashboardPage() {
       <DashboardLayout role="coordinator">
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-purple-600 mx-auto mb-4" />
+            <Loader2 className="h-12 w-12 animate-spin text-indigo-600 mx-auto mb-4" />
             <p className="text-slate-600">Loading dashboard...</p>
           </div>
         </div>
@@ -235,7 +235,7 @@ export default function CoordinatorDashboardPage() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-300 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
           </div>
-          
+
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
@@ -252,10 +252,11 @@ export default function CoordinatorDashboardPage() {
                 </div>
               </div>
               <p className="text-white/80 text-sm max-w-2xl">
-                Comprehensive oversight and management of all FYP activities, groups, supervisors, and submissions
+                Comprehensive oversight and management of all FYP activities,
+                groups, supervisors, and submissions
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white/15 backdrop-blur-md px-5 py-4 rounded-xl border border-white/30 shadow-lg hover:bg-white/20 transition-all">
                 <div className="flex items-center gap-3">
@@ -264,7 +265,9 @@ export default function CoordinatorDashboardPage() {
                     <p className="text-3xl font-bold text-white">
                       {data.usersSummary.totalStudents}
                     </p>
-                    <p className="text-xs text-white/80 mt-0.5 font-medium">Total Students</p>
+                    <p className="text-xs text-white/80 mt-0.5 font-medium">
+                      Total Students
+                    </p>
                   </div>
                 </div>
               </div>
@@ -275,7 +278,9 @@ export default function CoordinatorDashboardPage() {
                     <p className="text-3xl font-bold text-white">
                       {data.groupProjectOverview.totalGroups}
                     </p>
-                    <p className="text-xs text-white/80 mt-0.5 font-medium">Active Groups</p>
+                    <p className="text-xs text-white/80 mt-0.5 font-medium">
+                      Active Groups
+                    </p>
                   </div>
                 </div>
               </div>
@@ -354,7 +359,8 @@ export default function CoordinatorDashboardPage() {
                   {data.groupProjectOverview.groupsWithSupervisor}
                 </p>
                 <p className="text-xs text-purple-700/80 font-medium">
-                  {data.groupProjectOverview.groupsWithoutSupervisor} groups awaiting assignment
+                  {data.groupProjectOverview.groupsWithoutSupervisor} groups
+                  awaiting assignment
                 </p>
               </div>
             </CardContent>
@@ -379,7 +385,8 @@ export default function CoordinatorDashboardPage() {
                   {data.schedulesAndPanels.totalPanelsCreated}
                 </p>
                 <p className="text-xs text-amber-700/80 font-medium">
-                  {data.schedulesAndPanels.upcomingPresentationsCount} presentations scheduled
+                  {data.schedulesAndPanels.upcomingPresentationsCount}{" "}
+                  presentations scheduled
                 </p>
               </div>
             </CardContent>
@@ -424,12 +431,12 @@ export default function CoordinatorDashboardPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: "#ffffff",
                       border: "1px solid #e2e8f0",
                       borderRadius: "12px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                     }}
                   />
                 </PieChart>
@@ -440,14 +447,18 @@ export default function CoordinatorDashboardPage() {
                   <p className="text-2xl font-bold text-blue-900">
                     {data.usersSummary.studentsRegisteredForFYP}
                   </p>
-                  <p className="text-xs text-blue-700 mt-1 font-semibold">Registered</p>
+                  <p className="text-xs text-blue-700 mt-1 font-semibold">
+                    Registered
+                  </p>
                 </div>
                 <div className="text-center p-4 bg-linear-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-slate-200 shadow-sm">
                   <UserX className="h-5 w-5 text-slate-600 mx-auto mb-2" />
                   <p className="text-2xl font-bold text-slate-900">
                     {data.usersSummary.studentsNotRegistered}
                   </p>
-                  <p className="text-xs text-slate-700 mt-1 font-semibold">Not Registered</p>
+                  <p className="text-xs text-slate-700 mt-1 font-semibold">
+                    Not Registered
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -482,19 +493,20 @@ export default function CoordinatorDashboardPage() {
                       )}%)`
                     }
                     outerRadius={100}
-                    fill="#8884d8"
                     dataKey="value"
+                    fill="#FFA500"
                   >
                     {groupDistributionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={index} fill="#CC3F6E" />
                     ))}
                   </Pie>
-                  <Tooltip 
+
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: "#ffffff",
                       border: "1px solid #e2e8f0",
                       borderRadius: "12px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                     }}
                   />
                 </PieChart>
@@ -514,7 +526,9 @@ export default function CoordinatorDashboardPage() {
                   <p className="text-2xl font-bold text-amber-900">
                     {data.groupProjectOverview.groupsWithoutSupervisor}
                   </p>
-                  <p className="text-xs text-amber-700 mt-1 font-semibold">Unassigned</p>
+                  <p className="text-xs text-amber-700 mt-1 font-semibold">
+                    Unassigned
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -542,21 +556,21 @@ export default function CoordinatorDashboardPage() {
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={proposalStatusData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis 
-                    dataKey="name" 
+                  <XAxis
+                    dataKey="name"
                     stroke="#64748b"
-                    style={{ fontSize: '12px', fontWeight: '600' }}
+                    style={{ fontSize: "12px", fontWeight: "600" }}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="#64748b"
-                    style={{ fontSize: '12px', fontWeight: '600' }}
+                    style={{ fontSize: "12px", fontWeight: "600" }}
                   />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#ffffff",
                       border: "1px solid #e2e8f0",
                       borderRadius: "12px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                     }}
                   />
                   <Bar dataKey="value" radius={[8, 8, 0, 0]}>
@@ -575,7 +589,9 @@ export default function CoordinatorDashboardPage() {
                         .proposalsApproved
                     }
                   </p>
-                  <p className="text-xs text-green-700 mt-1 font-semibold">Approved</p>
+                  <p className="text-xs text-green-700 mt-1 font-semibold">
+                    Approved
+                  </p>
                 </div>
                 <div className="text-center p-3 bg-linear-to-br from-amber-50 to-orange-100 rounded-xl border-2 border-amber-200 shadow-sm">
                   <Clock className="h-5 w-5 text-amber-600 mx-auto mb-1" />
@@ -585,7 +601,9 @@ export default function CoordinatorDashboardPage() {
                         .proposalsSubmitted
                     }
                   </p>
-                  <p className="text-xs text-amber-700 mt-1 font-semibold">Pending</p>
+                  <p className="text-xs text-amber-700 mt-1 font-semibold">
+                    Pending
+                  </p>
                 </div>
                 <div className="text-center p-3 bg-linear-to-br from-red-50 to-rose-100 rounded-xl border-2 border-red-200 shadow-sm">
                   <XCircle className="h-5 w-5 text-red-600 mx-auto mb-1" />
@@ -595,7 +613,9 @@ export default function CoordinatorDashboardPage() {
                         .proposalsRejected
                     }
                   </p>
-                  <p className="text-xs text-red-700 mt-1 font-semibold">Rejected</p>
+                  <p className="text-xs text-red-700 mt-1 font-semibold">
+                    Rejected
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -620,21 +640,21 @@ export default function CoordinatorDashboardPage() {
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={projectStatusData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis 
-                    dataKey="name" 
+                  <XAxis
+                    dataKey="name"
                     stroke="#64748b"
-                    style={{ fontSize: '12px', fontWeight: '600' }}
+                    style={{ fontSize: "12px", fontWeight: "600" }}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="#64748b"
-                    style={{ fontSize: '12px', fontWeight: '600' }}
+                    style={{ fontSize: "12px", fontWeight: "600" }}
                   />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#ffffff",
                       border: "1px solid #e2e8f0",
                       borderRadius: "12px",
-                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                     }}
                   />
                   <Bar dataKey="value" fill="#6366f1" radius={[8, 8, 0, 0]} />
@@ -646,14 +666,18 @@ export default function CoordinatorDashboardPage() {
                   <p className="text-2xl font-bold text-indigo-900">
                     {data.groupProjectOverview.projectSelectionsApproved}
                   </p>
-                  <p className="text-xs text-indigo-700 mt-1 font-semibold">Approved Projects</p>
+                  <p className="text-xs text-indigo-700 mt-1 font-semibold">
+                    Approved Projects
+                  </p>
                 </div>
                 <div className="text-center p-4 bg-linear-to-br from-amber-50 to-orange-100 rounded-xl border-2 border-amber-200 shadow-sm">
                   <Clock className="h-6 w-6 text-amber-600 mx-auto mb-2" />
                   <p className="text-2xl font-bold text-amber-900">
                     {data.groupProjectOverview.projectSelectionsPendingApproval}
                   </p>
-                  <p className="text-xs text-amber-700 mt-1 font-semibold">Pending Approval</p>
+                  <p className="text-xs text-amber-700 mt-1 font-semibold">
+                    Pending Approval
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -771,7 +795,7 @@ export default function CoordinatorDashboardPage() {
                           <tr
                             key={supervisor.id}
                             className={`hover:bg-cyan-50/50 transition-colors ${
-                              index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'
+                              index % 2 === 0 ? "bg-white" : "bg-slate-50/30"
                             }`}
                           >
                             <td className="px-5 py-4">
@@ -843,7 +867,7 @@ export default function CoordinatorDashboardPage() {
                       <div
                         key={announcement.id}
                         className={`p-5 hover:bg-orange-50/50 transition-colors ${
-                          index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'
+                          index % 2 === 0 ? "bg-white" : "bg-slate-50/30"
                         }`}
                       >
                         <div className="flex items-start gap-4">
@@ -878,8 +902,12 @@ export default function CoordinatorDashboardPage() {
                   <div className="bg-linear-to-br from-orange-100 to-amber-100 p-5 rounded-full w-fit mx-auto mb-4">
                     <Megaphone className="h-10 w-10 text-orange-600" />
                   </div>
-                  <p className="text-sm font-semibold text-slate-600 mb-1">No announcements yet</p>
-                  <p className="text-xs text-slate-500">Check back later for updates</p>
+                  <p className="text-sm font-semibold text-slate-600 mb-1">
+                    No announcements yet
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Check back later for updates
+                  </p>
                 </div>
               )}
             </CardContent>

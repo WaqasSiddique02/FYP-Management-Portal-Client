@@ -254,3 +254,42 @@ export interface SwapScheduleResponse {
 export interface DeleteScheduleResponse {
   message: string;
 }
+
+// Coordinator Profile Types
+export interface CoordinatorProfile {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  phoneNumber: string;
+  coordinatorId: string;
+  department: CoordinatorDepartment;
+  officeAddress: string;
+  designation: string;
+  createdAt: string;
+  updatedAt: string;
+  fullName: string;
+  id: string;
+}
+
+export interface CoordinatorDepartment {
+  _id: string;
+  name: string;
+  code: string;
+  description: string;
+  facultyList: string[];
+  totalFaculty: number;
+  totalStudents: number;
+  createdAt: string;
+  updatedAt: string;
+  coordinator: string;
+  id: string;
+}
+
+export interface CoordinatorProfileResponse {
+  statusCode: number;
+  message: string;
+  data: CoordinatorProfile;
+  timestamp: string;
+}

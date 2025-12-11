@@ -727,7 +727,7 @@ const DemoSchedulingPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-gray-500">Date</Label>
-                    <p className="font-semibold break-words">
+                    <p className="font-semibold wrap-break-word">
                       {new Date(selectedSchedule.date).toLocaleDateString('en-US', {
                         weekday: 'long',
                         year: 'numeric',
@@ -762,7 +762,7 @@ const DemoSchedulingPage = () => {
                     {selectedSchedule.panel.members.map((member) => (
                       <div key={member._id} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-2 bg-gray-50 rounded">
                         <div className="flex items-center gap-2">
-                          <GraduationCap className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                          <GraduationCap className="w-4 h-4 text-indigo-600 shrink-0" />
                           <span className="text-sm">{member.firstName} {member.lastName}</span>
                         </div>
                         <Badge variant="outline" className="sm:ml-auto text-xs">{member.designation}</Badge>
