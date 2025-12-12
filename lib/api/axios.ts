@@ -24,9 +24,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only redirect to home on 401 if it's NOT a login attempt
     if (error.response?.status === 401) {
-      removeToken();
-      window.location.href = '/';
+      const isLoginRequest = error.config?.url?.includes('/login');
+      
+      if (!isLoginRequest) {
+        removeToken();
+        window.location.href = '/';
+      }
     }
     return Promise.reject(error);
   }

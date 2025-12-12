@@ -33,8 +33,10 @@ export const useAuth = () => {
       router.replace('/student/dashboard');
       return response;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
+      // Don't throw - just return null to stay on the page
+      return null;
     } finally {
       setLoading(false);
     }
@@ -57,8 +59,10 @@ export const useAuth = () => {
       router.replace('/supervisor/dashboard');
       return response;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
+      // Don't throw - just return null to stay on the page
+      return null;
     } finally {
       setLoading(false);
     }
@@ -81,8 +85,10 @@ export const useAuth = () => {
       router.replace('/coordinator/dashboard');
       return response;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
+      // Don't throw - just return null to stay on the page
+      return null;
     } finally {
       setLoading(false);
     }
