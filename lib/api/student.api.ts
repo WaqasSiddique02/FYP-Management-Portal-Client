@@ -23,6 +23,11 @@ export const studentAPI = {
     const response = await apiClient.get(ENDPOINTS.STUDENT.PROFILE);
     return response.data;
   },
+
+  getAnnouncements: async () => {
+    const response = await apiClient.get('/student/announcements');
+    return response.data.data || response.data;
+  },
 };
 
 export const groupAPI = {

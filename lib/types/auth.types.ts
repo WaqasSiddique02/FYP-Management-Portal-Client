@@ -48,6 +48,27 @@ export interface User {
   updatedAt?: string;
 }
 
+export interface AnnouncementCreator {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  fullName: string;
+  id: string;
+}
+
+export interface StudentAnnouncement {
+  _id: string;
+  title: string;
+  content: string;
+  department: string;
+  targetAudience: 'students' | 'supervisors' | 'general';
+  createdBy: AnnouncementCreator;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
 export enum UserRole {
   STUDENT = 'STUDENT',
   SUPERVISOR = 'SUPERVISOR',

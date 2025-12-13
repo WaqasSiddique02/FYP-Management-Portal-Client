@@ -2,11 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { dashboardAPI } from '@/lib/api/dashboard.api';
+import { studentAPI } from '@/lib/api/student.api';
+import { StudentAnnouncement } from '@/lib/types/auth.types';
 import StatsCards from './StatsCards';
 import ProjectOverview from './ProjectOverview';
 import GroupMembers from './GroupMembers';
 import PerformanceChart from './PerformanceChart';
 import RecentDocuments from './RecentDocuments';
+import RecentAnnouncements from './RecentAnnouncements';
 
 interface DashboardData {
   student: any;
@@ -21,6 +24,7 @@ interface DashboardData {
 
 export default function StudentDashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [announcements, setAnnouncements] = useState<StudentAnnouncement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,8 +32,12 @@ export default function StudentDashboard() {
     const fetchDashboard = async () => {
       try {
         setLoading(true);
-        const data = await dashboardAPI.student.getDashboard();
+        const [data, announcementsData] = await Promise.all([
+          dashboardAPI.student.getDashboard(),
+          studentAPI.getAnnouncements().catch(() => [])
+        ]);
         setDashboardData(data);
+        setAnnouncements(Array.isArray(announcementsData) ? announcementsData : []);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to load dashboard');
       } finally {
@@ -106,13 +114,13 @@ export default function StudentDashboard() {
 
         {/* Right Column - 1/3 width */}
         <div className="space-y-6">
+          {/* Announcements - Side Box */}
+          <RecentAnnouncements announcements={announcements} />
+          
           {dashboardData.group && (
             <GroupMembers group={dashboardData.group} />
           )}
-          
-          {dashboardData.documents && (
-            <RecentDocuments documents={dashboardData.documents} />
-          )}
+        
         </div>
       </div>
     </div>

@@ -38,6 +38,7 @@ const studentNavItems = [
   { href: '/student/documents', label: 'Upload Documents', icon: Upload },
   { href: '/student/marks-report', label: 'Marks Report', icon: BarChart3 },
   { href: '/student/demo-details', label: 'Demo Details', icon: Calendar },
+  { href: '/student/announcements', label: 'Announcements', icon: Megaphone },
   { href: '/student/profile', label: 'Profile', icon: User },
 ];
 
