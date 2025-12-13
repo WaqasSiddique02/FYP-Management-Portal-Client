@@ -81,7 +81,7 @@ export default function StudentDashboard() {
 
       {/* Stats Cards */}
       <StatsCards
-        scheduleTime={dashboardData.schedule?.scheduledAt || null}
+        scheduleTime={dashboardData.schedule?.date || null}
         proposalStatus={dashboardData.proposal?.proposalStatus || 'pending'}
         ideaStatus={dashboardData.project?.ideaStatus || 'pending'}
         supervisorName={dashboardData.supervisor?.name || 'Not Assigned'}

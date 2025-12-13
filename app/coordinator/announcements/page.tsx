@@ -18,6 +18,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { 
   Megaphone, 
@@ -40,7 +47,7 @@ export default function AnnouncementsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterDepartment, setFilterDepartment] = useState<string>('all');
+  const [filterAudience, setFilterAudience] = useState<string>('all');
   
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -53,11 +60,12 @@ export default function AnnouncementsPage() {
   const [formData, setFormData] = useState<CreateAnnouncementDto>({
     title: '',
     content: '',
-    department: 'Computer Science',
+    targetAudience: 'general',
   });
   const [editFormData, setEditFormData] = useState<UpdateAnnouncementDto>({
     title: '',
     content: '',
+    targetAudience: 'general',
   });
   
   const [submitting, setSubmitting] = useState(false);
@@ -65,14 +73,13 @@ export default function AnnouncementsPage() {
 
   useEffect(() => {
     fetchAnnouncements();
-  }, [filterDepartment]);
+  }, []);
 
   const fetchAnnouncements = async () => {
     try {
       setLoading(true);
       setError(null);
-      const dept = filterDepartment === 'all' ? undefined : filterDepartment;
-      const data = await coordinatorApi.getAllAnnouncements(dept);
+      const data = await coordinatorApi.getAllAnnouncements();
       setAnnouncements(Array.isArray(data) ? data : []);
     } catch (error: any) {
       console.error('Error fetching announcements:', error);
@@ -93,7 +100,7 @@ export default function AnnouncementsPage() {
       setSubmitting(true);
       await coordinatorApi.createAnnouncement(formData);
       setCreateDialogOpen(false);
-      setFormData({ title: '', content: '', department: 'Computer Science' });
+      setFormData({ title: '', content: '', targetAudience: 'general' });
       fetchAnnouncements();
     } catch (error: any) {
       console.error('Error creating announcement:', error);
@@ -114,7 +121,7 @@ export default function AnnouncementsPage() {
       await coordinatorApi.updateAnnouncement(selectedAnnouncement._id, editFormData);
       setEditDialogOpen(false);
       setSelectedAnnouncement(null);
-      setEditFormData({ title: '', content: '' });
+      setEditFormData({ title: '', content: '', targetAudience: 'general' });
       fetchAnnouncements();
     } catch (error: any) {
       console.error('Error updating announcement:', error);
@@ -146,6 +153,7 @@ export default function AnnouncementsPage() {
     setEditFormData({
       title: announcement.title,
       content: announcement.content,
+      targetAudience: announcement.targetAudience,
     });
     setEditDialogOpen(true);
   };
@@ -162,15 +170,23 @@ export default function AnnouncementsPage() {
 
   const filteredAnnouncements = (announcements || []).filter(announcement => {
     if (!announcement) return false;
+    
     const matchesSearch = 
       announcement?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       announcement?.content?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    
+    const matchesAudience = 
+      filterAudience === 'all' || 
+      announcement?.targetAudience === filterAudience;
+    
+    return matchesSearch && matchesAudience;
   });
 
   const stats = {
     total: (announcements || []).length,
-    computerScience: (announcements || []).filter(a => a?.department === 'Computer Science').length,
+    students: (announcements || []).filter(a => a?.targetAudience === 'students').length,
+    supervisors: (announcements || []).filter(a => a?.targetAudience === 'supervisors').length,
+    general: (announcements || []).filter(a => a?.targetAudience === 'general').length,
   };
 
   if (loading) {
@@ -236,26 +252,48 @@ export default function AnnouncementsPage() {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-4">
           <Card className="border-l-4 border-l-indigo-600">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Announcements</CardTitle>
+              <CardTitle className="text-sm font-medium">Total</CardTitle>
               <Megaphone className="h-4 w-4 text-indigo-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-indigo-600">{stats.total}</div>
-              <p className="text-xs text-gray-600 mt-1">Active announcements</p>
+              <p className="text-xs text-gray-600 mt-1">All announcements</p>
             </CardContent>
           </Card>
 
           <Card className="border-l-4 border-l-blue-600">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Computer Science</CardTitle>
+              <CardTitle className="text-sm font-medium">Students</CardTitle>
               <Bell className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.computerScience}</div>
-              <p className="text-xs text-gray-600 mt-1">Department announcements</p>
+              <div className="text-2xl font-bold text-blue-600">{stats.students}</div>
+              <p className="text-xs text-gray-600 mt-1">For students</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-green-600">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Supervisors</CardTitle>
+              <User className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{stats.supervisors}</div>
+              <p className="text-xs text-gray-600 mt-1">For supervisors</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-purple-600">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">General</CardTitle>
+              <Megaphone className="h-4 w-4 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{stats.general}</div>
+              <p className="text-xs text-gray-600 mt-1">For everyone</p>
             </CardContent>
           </Card>
         </div>
@@ -276,12 +314,14 @@ export default function AnnouncementsPage() {
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-gray-500" />
                 <select
-                  value={filterDepartment}
-                  onChange={(e) => setFilterDepartment(e.target.value)}
+                  value={filterAudience}
+                  onChange={(e) => setFilterAudience(e.target.value)}
                   className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="all">All Departments</option>
-                  <option value="Computer Science">Computer Science</option>
+                  <option value="all">All Audiences</option>
+                  <option value="students">Students</option>
+                  <option value="supervisors">Supervisors</option>
+                  <option value="general">General</option>
                 </select>
               </div>
             </div>
@@ -317,9 +357,21 @@ export default function AnnouncementsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
+                      <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <CardTitle className="text-xl">{announcement?.title || 'Untitled'}</CardTitle>
-                        <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200">
+                        <Badge 
+                          className={
+                            announcement?.targetAudience === 'students' 
+                              ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                              : announcement?.targetAudience === 'supervisors'
+                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                          }
+                        >
+                          {announcement?.targetAudience === 'students' ? 'Students' :
+                           announcement?.targetAudience === 'supervisors' ? 'Supervisors' : 'General'}
+                        </Badge>
+                        <Badge variant="outline">
                           {announcement?.department || 'N/A'}
                         </Badge>
                       </div>
@@ -334,7 +386,11 @@ export default function AnnouncementsPage() {
                     <div className="flex items-center gap-6 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        <span>{announcement?.createdBy?.firstName} {announcement?.createdBy?.lastName}</span>
+                        <span>
+                          {announcement?.createdBy 
+                            ? `${announcement.createdBy.firstName} ${announcement.createdBy.lastName}`
+                            : 'Unknown'}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
@@ -419,14 +475,16 @@ export default function AnnouncementsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="department">Department *</Label>
+                <Label htmlFor="targetAudience">Target Audience *</Label>
                 <select
-                  id="department"
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  id="targetAudience"
+                  value={formData.targetAudience}
+                  onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value as any })}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="Computer Science">Computer Science</option>
+                  <option value="general">General (Students & Supervisors)</option>
+                  <option value="students">Students Only</option>
+                  <option value="supervisors">Supervisors Only</option>
                 </select>
               </div>
             </div>
@@ -482,6 +540,19 @@ export default function AnnouncementsPage() {
                   className="resize-none"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-targetAudience">Target Audience *</Label>
+                <select
+                  id="edit-targetAudience"
+                  value={editFormData.targetAudience}
+                  onChange={(e) => setEditFormData({ ...editFormData, targetAudience: e.target.value as any })}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="general">General (Students & Supervisors)</option>
+                  <option value="students">Students Only</option>
+                  <option value="supervisors">Supervisors Only</option>
+                </select>
+              </div>
             </div>
             <DialogFooter>
               <Button
@@ -512,8 +583,20 @@ export default function AnnouncementsPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div className="flex items-center gap-4">
-                <Badge className="bg-indigo-100 text-indigo-800">
+              <div className="flex items-center gap-4 flex-wrap">
+                <Badge 
+                  className={
+                    selectedAnnouncement?.targetAudience === 'students' 
+                      ? 'bg-blue-100 text-blue-800'
+                      : selectedAnnouncement?.targetAudience === 'supervisors'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-purple-100 text-purple-800'
+                  }
+                >
+                  {selectedAnnouncement?.targetAudience === 'students' ? 'Students' :
+                   selectedAnnouncement?.targetAudience === 'supervisors' ? 'Supervisors' : 'General'}
+                </Badge>
+                <Badge variant="outline">
                   {selectedAnnouncement?.department}
                 </Badge>
                 <span className="text-sm text-gray-600">
@@ -533,17 +616,20 @@ export default function AnnouncementsPage() {
                 <p className="text-gray-700 whitespace-pre-wrap">{selectedAnnouncement?.content}</p>
               </div>
               <Separator />
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-sm text-gray-500 mb-2">Created By</h3>
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-700">
-                    {selectedAnnouncement?.createdBy?.firstName} {selectedAnnouncement?.createdBy?.lastName}
-                  </span>
-                  <span className="text-gray-500">•</span>
-                  <span className="text-sm text-gray-600">{selectedAnnouncement?.createdBy?.email}</span>
+              {selectedAnnouncement?.createdBy && (
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h3 className="font-semibold text-sm text-gray-500 mb-2">Created By</h3>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span className="text-gray-700">
+                      {selectedAnnouncement.createdBy.fullName || 
+                       `${selectedAnnouncement.createdBy.firstName} ${selectedAnnouncement.createdBy.lastName}`}
+                    </span>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-sm text-gray-600">{selectedAnnouncement.createdBy.email}</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setViewDialogOpen(false)}>

@@ -92,7 +92,8 @@ export interface Announcement {
   title: string;
   content: string;
   department: string;
-  createdBy: AnnouncementCreator;
+  targetAudience: 'students' | 'supervisors' | 'general';
+  createdBy: AnnouncementCreator | null;
   createdAt: string;
   updatedAt: string;
   id: string;
@@ -103,17 +104,20 @@ export interface AnnouncementCreator {
   firstName: string;
   lastName: string;
   email: string;
+  fullName: string;
+  id: string;
 }
 
 export interface CreateAnnouncementDto {
   title: string;
   content: string;
-  department: string;
+  targetAudience: 'students' | 'supervisors' | 'general';
 }
 
 export interface UpdateAnnouncementDto {
   title?: string;
   content?: string;
+  targetAudience?: 'students' | 'supervisors' | 'general';
 }
 
 export interface AnnouncementResponse {

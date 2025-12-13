@@ -100,30 +100,27 @@ export const coordinatorApi = {
 
   // Announcement APIs
   createAnnouncement: async (data: CreateAnnouncementDto): Promise<AnnouncementResponse> => {
-    const response = await apiClient.post(`${API_BASE_URL}/announcements`, data);
+    const response = await apiClient.post(`${API_BASE_URL}/coordinator/announcements`, data);
     return response.data;
   },
 
-  getAllAnnouncements: async (department?: string): Promise<Announcement[]> => {
-    const url = department 
-      ? `${API_BASE_URL}/announcements?department=${department}`
-      : `${API_BASE_URL}/announcements`;
-    const response = await apiClient.get(url);
-    return response.data.data;
+  getAllAnnouncements: async (): Promise<Announcement[]> => {
+    const response = await apiClient.get(`${API_BASE_URL}/coordinator/announcements`);
+    return response.data.data || [];
   },
 
   getAnnouncementById: async (id: string): Promise<Announcement> => {
-    const response = await apiClient.get(`${API_BASE_URL}/announcements/${id}`);
+    const response = await apiClient.get(`${API_BASE_URL}/coordinator/announcements/${id}`);
     return response.data;
   },
 
   updateAnnouncement: async (id: string, data: UpdateAnnouncementDto): Promise<AnnouncementResponse> => {
-    const response = await apiClient.put(`${API_BASE_URL}/announcements/${id}`, data);
+    const response = await apiClient.put(`${API_BASE_URL}/coordinator/announcements/${id}`, data);
     return response.data;
   },
 
   deleteAnnouncement: async (id: string): Promise<DeleteAnnouncementResponse> => {
-    const response = await apiClient.delete(`${API_BASE_URL}/announcements/${id}`);
+    const response = await apiClient.delete(`${API_BASE_URL}/coordinator/announcements/${id}`);
     return response.data;
   },
 

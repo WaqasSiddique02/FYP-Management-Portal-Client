@@ -575,7 +575,7 @@ export default function ManagementPage() {
   const handleDeleteStudent = async () => {
     if (!selectedStudent) return;
     try {
-      await apiClient.delete(`${API_BASE_URL}/users/${selectedStudent._id}`);
+      await apiClient.delete(`${API_BASE_URL}/users/${selectedStudent._id}?role=student`);
       setDeleteStudentOpen(false);
       await fetchAllStudents();
       alert('Student deleted successfully!');
