@@ -49,6 +49,7 @@ const supervisorNavItems = [
   { href: '/supervisor/proposals', label: 'Proposals', icon: FileText },
   { href: '/supervisor/evaluations', label: 'Evaluations', icon: BookOpen },
   { href: '/supervisor/schedules', label: 'Schedules', icon: Calendar },
+  { href: '/supervisor/announcements', label: 'Announcements', icon: Megaphone },
   { href: '/supervisor/profile', label: 'Profile', icon: User },
 ];
 

@@ -8,7 +8,6 @@ import StatsCards from './StatsCards';
 import ProjectOverview from './ProjectOverview';
 import GroupMembers from './GroupMembers';
 import PerformanceChart from './PerformanceChart';
-import RecentDocuments from './RecentDocuments';
 import RecentAnnouncements from './RecentAnnouncements';
 
 interface DashboardData {

@@ -7,8 +7,10 @@ import SupervisorStatsCards from '@/components/dashboard/SupervisorStatsCards';
 import RecentActivityList from '@/components/dashboard/RecentActivityList';
 import WorkloadSummary from '@/components/dashboard/WorkloadSummary';
 import SupervisorCharts from '@/components/dashboard/SupervisorCharts';
+import RecentAnnouncements from '@/components/dashboard/RecentAnnouncements';
 import { supervisorApi } from '@/lib/api/supervisor.api';
 import { SupervisorDashboardData } from '@/lib/types/supervisor.types';
+import { StudentAnnouncement } from '@/lib/types/auth.types';
 import { Loader2 } from 'lucide-react';
 import { useAuthContext } from '@/lib/contexts/AuthContext';
 
@@ -16,6 +18,7 @@ export default function SupervisorDashboard() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuthContext();
   const [dashboardData, setDashboardData] = useState<SupervisorDashboardData | null>(null);
+  const [announcements, setAnnouncements] = useState<StudentAnnouncement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,8 +42,12 @@ export default function SupervisorDashboard() {
     try {
       setLoading(true);
       setError(null);
-      const response = await supervisorApi.getDashboard();
+      const [response, announcementsData] = await Promise.all([
+        supervisorApi.getDashboard(),
+        supervisorApi.getAnnouncements().catch(() => [])
+      ]);
       setDashboardData(response.data);
+      setAnnouncements(Array.isArray(announcementsData) ? announcementsData : []);
     } catch (err: any) {
       console.error('Error fetching dashboard data:', err);
       setError(err.response?.data?.message || 'Failed to load dashboard data');
@@ -132,15 +139,20 @@ export default function SupervisorDashboard() {
         />
 
         {/* Activity and Workload Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Activity */}
-          <RecentActivityList activities={dashboardData.recentActivity.activities} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Activity and Workload - 2/3 width */}
+          <div className="lg:col-span-2 space-y-6">
+            <RecentActivityList activities={dashboardData.recentActivity.activities} />
+            <WorkloadSummary
+              documentSummary={dashboardData.documentSummary}
+              evaluations={dashboardData.evaluations}
+            />
+          </div>
 
-          {/* Workload Summary */}
-          <WorkloadSummary
-            documentSummary={dashboardData.documentSummary}
-            evaluations={dashboardData.evaluations}
-          />
+          {/* Announcements - Side Box 1/3 width */}
+          <div>
+            <RecentAnnouncements announcements={announcements} role="supervisor" />
+          </div>
         </div>
       </div>
     </DashboardLayout>

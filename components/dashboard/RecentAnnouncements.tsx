@@ -10,10 +10,29 @@ import { useRouter } from 'next/navigation';
 
 interface RecentAnnouncementsProps {
   announcements: StudentAnnouncement[];
+  role?: 'student' | 'supervisor';
 }
 
-export default function RecentAnnouncements({ announcements }: RecentAnnouncementsProps) {
+export default function RecentAnnouncements({ announcements, role = 'student' }: RecentAnnouncementsProps) {
   const router = useRouter();
+
+  const colorScheme = role === 'supervisor' ? {
+    primary: 'green',
+    header: 'bg-linear-to-r from-green-50 to-emerald-50 border-b border-green-100',
+    iconBg: 'bg-green-600',
+    border: 'border-green-100',
+    buttonText: 'text-green-600 hover:text-green-700 hover:bg-green-50',
+    groupHover: 'group-hover:text-green-600',
+  } : {
+    primary: 'blue',
+    header: 'bg-linear-to-r from-blue-50 to-indigo-50 border-b border-blue-100',
+    iconBg: 'bg-blue-600',
+    border: 'border-blue-100',
+    buttonText: 'text-blue-600 hover:text-blue-700 hover:bg-blue-50',
+    groupHover: 'group-hover:text-blue-600',
+  };
+
+  const viewAllPath = role === 'supervisor' ? '/supervisor/announcements' : '/student/announcements';
 
   const getAudienceBadge = (audience: string) => {
     const colors = {
@@ -44,11 +63,11 @@ export default function RecentAnnouncements({ announcements }: RecentAnnouncemen
   };
 
   return (
-    <Card className="shadow-lg border-blue-100">
-      <CardHeader className="bg-linear-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+    <Card className={`shadow-lg ${colorScheme.border}`}>
+      <CardHeader className={colorScheme.header}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-600 rounded-lg">
+            <div className={`p-2 ${colorScheme.iconBg} rounded-lg`}>
               <Megaphone className="w-5 h-5 text-white" />
             </div>
             <CardTitle className="text-xl font-bold text-gray-900">
@@ -58,8 +77,8 @@ export default function RecentAnnouncements({ announcements }: RecentAnnouncemen
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push('/student/announcements')}
-            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            onClick={() => router.push(viewAllPath)}
+            className={colorScheme.buttonText}
           >
             View All
             <ArrowRight className="w-4 h-4 ml-1" />
@@ -80,8 +99,8 @@ export default function RecentAnnouncements({ announcements }: RecentAnnouncemen
             {announcements.slice(0, 5).map((announcement, index) => (
               <div
                 key={announcement._id}
-                className="p-4 hover:bg-blue-50/50 transition-colors cursor-pointer group"
-                onClick={() => router.push('/student/announcements')}
+                className={`p-4 hover:${colorScheme.primary}-50/50 transition-colors cursor-pointer group`}
+                onClick={() => router.push(viewAllPath)}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
@@ -96,7 +115,7 @@ export default function RecentAnnouncements({ announcements }: RecentAnnouncemen
                         <Badge className="bg-red-500 text-white text-xs">New</Badge>
                       )}
                     </div>
-                    <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    <h4 className={`font-semibold text-gray-900 ${colorScheme.groupHover} transition-colors line-clamp-1`}>
                       {announcement.title}
                     </h4>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">

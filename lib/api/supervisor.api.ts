@@ -1,5 +1,6 @@
 import apiClient from './axios';
 import { SupervisorDashboardResponse, GroupsListResponse, GroupDetails, ApproveIdeaPayload, RejectIdeaPayload } from '../types/supervisor.types';
+import { StudentAnnouncement } from '../types/auth.types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
 
@@ -327,5 +328,16 @@ export const supervisorApi = {
   }) => {
     const response = await apiClient.patch(`${API_BASE_URL}/auth/supervisor/set-password`, payload);
     return response.data;
+  },
+
+  // Announcements
+  getAnnouncements: async (): Promise<StudentAnnouncement[]> => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/announcements`);
+    return response.data.data || response.data;
+  },
+
+  getAnnouncementById: async (id: string): Promise<StudentAnnouncement> => {
+    const response = await apiClient.get(`${API_BASE_URL}/supervisor/announcements/${id}`);
+    return response.data.data || response.data;
   },
 };
