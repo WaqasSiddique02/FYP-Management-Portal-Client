@@ -1,25 +1,24 @@
 import apiClient from './axios';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
+import { ENDPOINTS } from './endpoints';
 
 export const dashboardAPI = {
   student: {
     getDashboard: async () => {
-      const { data } = await apiClient.get(`${API_BASE_URL}/dashboard/student`);
+      const { data } = await apiClient.get(ENDPOINTS.DASHBOARD.STUDENT);
       return data.data.dashboard;
     },
   },
   
   supervisor: {
     getDashboard: async () => {
-      const { data } = await apiClient.get(`${API_BASE_URL}/dashboard/supervisor`);
+      const { data } = await apiClient.get(ENDPOINTS.DASHBOARD.SUPERVISOR);
       return data.data.dashboard;
     },
   },
   
   coordinator: {
     getDashboard: async () => {
-      const { data } = await apiClient.get(`${API_BASE_URL}/dashboard/coordinator`);
+      const { data } = await apiClient.get(ENDPOINTS.DASHBOARD.COORDINATOR);
       return data.data.dashboard;
     },
   },

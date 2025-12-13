@@ -216,6 +216,10 @@ export default function PresentationSchedulesPage() {
     );
   });
 
+  // Filter out groups that are already scheduled from the unscheduled list
+  const scheduledGroupIds = new Set(assignedSchedules.map(schedule => schedule.group._id));
+  const filteredUnscheduledGroups = unscheduledGroups.filter(group => !scheduledGroupIds.has(group.id));
+
   if (authLoading || loadingPanels) {
     return (
       <DashboardLayout role="supervisor">
@@ -716,14 +720,14 @@ export default function PresentationSchedulesPage() {
                 )}
 
                 {/* Unscheduled Groups */}
-                {unscheduledGroups.length > 0 && (
+                {filteredUnscheduledGroups.length > 0 && (
                   <div className="space-y-3 mt-6">
                     <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                       <AlertCircle className="h-5 w-5 text-orange-600" />
                       Unscheduled Groups
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {unscheduledGroups.map((group) => (
+                      {filteredUnscheduledGroups.map((group) => (
                         <Card key={group.id} className="border-orange-200 bg-orange-50/30">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between gap-2">
@@ -743,7 +747,7 @@ export default function PresentationSchedulesPage() {
                 )}
 
                 {/* Empty States */}
-                {assignedSchedules.length === 0 && unscheduledGroups.length === 0 && (
+                {assignedSchedules.length === 0 && filteredUnscheduledGroups.length === 0 && (
                   <Card className="border-2 border-dashed">
                     <CardContent className="flex flex-col items-center justify-center py-16">
                       <Users className="h-12 w-12 text-slate-400 mb-4" />
@@ -756,7 +760,7 @@ export default function PresentationSchedulesPage() {
                 )}
 
                 {assignedSchedules.length === 0 &&
-                  unscheduledGroups.length === 0 &&
+                  filteredUnscheduledGroups.length === 0 &&
                   assignedSearchQuery && (
                     <Card className="border-2 border-dashed">
                       <CardContent className="flex flex-col items-center justify-center py-16">

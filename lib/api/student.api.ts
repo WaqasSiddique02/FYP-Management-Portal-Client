@@ -25,7 +25,7 @@ export const studentAPI = {
   },
 
   getAnnouncements: async () => {
-    const response = await apiClient.get('/student/announcements');
+    const response = await apiClient.get(ENDPOINTS.STUDENT.ANNOUNCEMENTS);
     return response.data.data || response.data;
   },
 };

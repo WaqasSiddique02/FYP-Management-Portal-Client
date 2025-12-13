@@ -1,13 +1,12 @@
 import apiClient from './axios';
+import { ENDPOINTS } from './endpoints';
 import { SupervisorDashboardResponse, GroupsListResponse, GroupDetails, ApproveIdeaPayload, RejectIdeaPayload } from '../types/supervisor.types';
 import { StudentAnnouncement } from '../types/auth.types';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
 
 export const supervisorApi = {
   getDashboard: async (): Promise<SupervisorDashboardResponse> => {
     const response = await apiClient.get<SupervisorDashboardResponse>(
-      `${API_BASE_URL}/dashboard/supervisor`
+      ENDPOINTS.SUPERVISOR.DASHBOARD
     );
     return response.data;
   },
@@ -15,21 +14,21 @@ export const supervisorApi = {
   // Groups Management
   getAssignedGroups: async (): Promise<GroupDetails[]> => {
     const response = await apiClient.get<{ statusCode: number; message: string; data: GroupDetails[]; timestamp: string }>(
-      `${API_BASE_URL}/supervisor/assigned-groups`
+      ENDPOINTS.SUPERVISOR.ASSIGNED_GROUPS
     );
     return response.data.data;
   },
 
   getAssignedGroupById: async (groupId: string): Promise<GroupDetails> => {
     const response = await apiClient.get<{ statusCode: number; message: string; data: GroupDetails; timestamp: string }>(
-      `${API_BASE_URL}/supervisor/assigned-groups/${groupId}`
+      ENDPOINTS.SUPERVISOR.ASSIGNED_GROUP_BY_ID(groupId)
     );
     return response.data.data;
   },
 
   // Custom Ideas Approval
   getCustomIdeas: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/custom-ideas`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.CUSTOM_IDEAS);
     // Handle different response formats from backend
     if (Array.isArray(response.data)) {
       return response.data;
@@ -42,7 +41,7 @@ export const supervisorApi = {
 
   approveCustomIdea: async (ideaId: string, payload: ApproveIdeaPayload) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/custom-ideas/${ideaId}/approve`,
+      ENDPOINTS.SUPERVISOR.CUSTOM_IDEA_APPROVE(ideaId),
       payload
     );
     return response.data;
@@ -50,7 +49,7 @@ export const supervisorApi = {
 
   rejectCustomIdea: async (ideaId: string, payload: RejectIdeaPayload) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/custom-ideas/${ideaId}/reject`,
+      ENDPOINTS.SUPERVISOR.CUSTOM_IDEA_REJECT(ideaId),
       payload
     );
     return response.data;
@@ -58,13 +57,13 @@ export const supervisorApi = {
 
   // Selected Ideas Approval
   getSelectedIdeas: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/selected-ideas`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.SELECTED_IDEAS);
     return response.data;
   },
 
   approveSelectedIdea: async (ideaId: string, payload: ApproveIdeaPayload) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/selected-ideas/${ideaId}/approve`,
+      ENDPOINTS.SUPERVISOR.SELECTED_IDEA_APPROVE(ideaId),
       payload
     );
     return response.data;
@@ -72,7 +71,7 @@ export const supervisorApi = {
 
   rejectSelectedIdea: async (ideaId: string, payload: RejectIdeaPayload) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/selected-ideas/${ideaId}/reject`,
+      ENDPOINTS.SUPERVISOR.SELECTED_IDEA_REJECT(ideaId),
       payload
     );
     return response.data;
@@ -80,7 +79,7 @@ export const supervisorApi = {
 
   // Project Ideas Management
   getOwnProjectIdeas: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/project-ideas`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.PROJECT_IDEAS);
     // Handle different response formats from backend
     if (Array.isArray(response.data)) {
       return response.data;
@@ -97,7 +96,7 @@ export const supervisorApi = {
     technologies?: string[];
     requirements?: string;
   }) => {
-    const response = await apiClient.post(`${API_BASE_URL}/supervisor/project-ideas`, payload);
+    const response = await apiClient.post(ENDPOINTS.SUPERVISOR.PROJECT_IDEAS, payload);
     return response.data;
   },
 
@@ -111,20 +110,20 @@ export const supervisorApi = {
     }
   ) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/project-ideas/${ideaId}`,
+      ENDPOINTS.SUPERVISOR.PROJECT_IDEA_BY_ID(ideaId),
       payload
     );
     return response.data;
   },
 
   deleteProjectIdea: async (ideaId: string) => {
-    const response = await apiClient.delete(`${API_BASE_URL}/supervisor/project-ideas/${ideaId}`);
+    const response = await apiClient.delete(ENDPOINTS.SUPERVISOR.PROJECT_IDEA_BY_ID(ideaId));
     return response.data;
   },
 
   // Proposals Management
   getProposals: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/proposals`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.PROPOSALS);
     // Handle different response formats
     if (Array.isArray(response.data)) {
       return response.data;
@@ -136,13 +135,13 @@ export const supervisorApi = {
   },
 
   getProposalById: async (proposalId: string) => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/proposals/${proposalId}`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.PROPOSAL_BY_ID(proposalId));
     return response.data.data || response.data;
   },
 
   approveProposal: async (proposalId: string, payload: { comments?: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/proposals/${proposalId}/approve`,
+      ENDPOINTS.SUPERVISOR.PROPOSAL_APPROVE(proposalId),
       payload
     );
     return response.data;
@@ -150,7 +149,7 @@ export const supervisorApi = {
 
   rejectProposal: async (proposalId: string, payload: { reason: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/proposals/${proposalId}/reject`,
+      ENDPOINTS.SUPERVISOR.PROPOSAL_REJECT(proposalId),
       payload
     );
     return response.data;
@@ -158,7 +157,7 @@ export const supervisorApi = {
 
   addProposalComment: async (proposalId: string, payload: { comment: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/proposals/${proposalId}/comment`,
+      ENDPOINTS.SUPERVISOR.PROPOSAL_COMMENT(proposalId),
       payload
     );
     return response.data;
@@ -166,7 +165,7 @@ export const supervisorApi = {
 
   // Documents Management
   getDocuments: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/documents`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.DOCUMENTS);
     if (Array.isArray(response.data)) {
       return response.data;
     }
@@ -178,7 +177,7 @@ export const supervisorApi = {
 
   downloadDocument: async (documentId: string) => {
     const response = await apiClient.get(
-      `${API_BASE_URL}/supervisor/documents/${documentId}/download`,
+      ENDPOINTS.SUPERVISOR.DOCUMENT_DOWNLOAD(documentId),
       { responseType: 'blob' }
     );
     // Create download link
@@ -195,7 +194,7 @@ export const supervisorApi = {
 
   approveDocument: async (documentId: string, payload: { comments?: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/documents/${documentId}/approve`,
+      ENDPOINTS.SUPERVISOR.DOCUMENT_APPROVE(documentId),
       payload
     );
     return response.data;
@@ -203,7 +202,7 @@ export const supervisorApi = {
 
   rejectDocument: async (documentId: string, payload: { reason: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/documents/${documentId}/reject`,
+      ENDPOINTS.SUPERVISOR.DOCUMENT_REJECT(documentId),
       payload
     );
     return response.data;
@@ -211,7 +210,7 @@ export const supervisorApi = {
 
   addDocumentFeedback: async (documentId: string, payload: { feedback: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/documents/${documentId}/feedback`,
+      ENDPOINTS.SUPERVISOR.DOCUMENT_FEEDBACK(documentId),
       payload
     );
     return response.data;
@@ -219,7 +218,7 @@ export const supervisorApi = {
 
   // Evaluations Management
   getFinalEvaluations: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/final-evaluations`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.FINAL_EVALUATIONS);
     if (Array.isArray(response.data)) {
       return response.data;
     }
@@ -238,7 +237,7 @@ export const supervisorApi = {
     totalMarks: number;
   }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/final-evaluations/${projectId}/marks`,
+      ENDPOINTS.SUPERVISOR.FINAL_EVALUATION_MARKS(projectId),
       payload
     );
     return response.data;
@@ -246,65 +245,49 @@ export const supervisorApi = {
 
   addFinalFeedback: async (projectId: string, payload: { feedback: string }) => {
     const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/final-evaluations/${projectId}/feedback`,
+      ENDPOINTS.SUPERVISOR.FINAL_EVALUATION_FEEDBACK(projectId),
       payload
     );
     return response.data;
   },
 
   completeEvaluation: async (projectId: string) => {
-    const response = await apiClient.put(
-      `${API_BASE_URL}/supervisor/final-evaluations/${projectId}/complete`
-    );
+    const response = await apiClient.put(ENDPOINTS.SUPERVISOR.FINAL_EVALUATION_COMPLETE(projectId));
     return response.data;
   },
 
-  // Presentation Schedules
+  // Panels and Schedules
   getMyPanels: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/schedules/my-panels`);
-    // Handle nested data structure
-    const data = response.data?.data || response.data;
-    return {
-      panels: data?.panels || [],
-      totalPanels: data?.totalPanels || 0,
-      message: data?.message || ''
-    };
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.MY_PANELS);
+    if (Array.isArray(response.data)) {
+      return { panels: response.data };
+    }
+    return response.data;
   },
 
   getMyPanelSchedules: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/schedules/panel-schedules`);
-    // Handle nested data structure
-    const data = response.data?.data || response.data;
-    return {
-      schedules: data?.schedules || [],
-      totalSchedules: data?.totalSchedules || 0,
-      message: data?.message || ''
-    };
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.MY_PANEL_SCHEDULES);
+    if (Array.isArray(response.data)) {
+      return { schedules: response.data };
+    }
+    return response.data;
   },
 
   getAssignedGroupsSchedules: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/schedules/assigned-groups`);
-    // Handle nested data structure
-    const data = response.data?.data || response.data;
-    return {
-      schedules: data?.schedules || [],
-      unscheduledGroups: data?.unscheduledGroups || [],
-      totalAssignedGroups: data?.totalAssignedGroups || 0,
-      scheduledCount: data?.scheduledCount || 0,
-      unscheduledCount: data?.unscheduledCount || 0,
-      message: data?.message || ''
-    };
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.ASSIGNED_GROUPS_SCHEDULES);
+    if (Array.isArray(response.data)) {
+      return { schedules: response.data, unscheduledGroups: [], totalAssignedGroups: 0, scheduledCount: 0, unscheduledCount: 0 };
+    }
+    return response.data;
   },
 
   // Profile Management
   getProfile: async () => {
-    const response = await apiClient.get(`${API_BASE_URL}/auth/supervisor/profile`);
-    const data = response.data?.data || response.data;
-    // Remove assignedGroups from profile data
-    if (data && data.assignedGroups) {
-      delete data.assignedGroups;
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.PROFILE);
+    if (response.data?.data) {
+      return response.data.data;
     }
-    return data;
+    return response.data;
   },
 
   updateProfile: async (payload: {
@@ -318,7 +301,7 @@ export const supervisorApi = {
     officeHours?: string;
     maxStudents?: number;
   }) => {
-    const response = await apiClient.patch(`${API_BASE_URL}/auth/supervisor/profile`, payload);
+    const response = await apiClient.patch(ENDPOINTS.SUPERVISOR.UPDATE_PROFILE, payload);
     return response.data;
   },
 
@@ -326,18 +309,18 @@ export const supervisorApi = {
     currentPassword: string;
     newPassword: string;
   }) => {
-    const response = await apiClient.patch(`${API_BASE_URL}/auth/supervisor/set-password`, payload);
+    const response = await apiClient.patch(ENDPOINTS.SUPERVISOR.UPDATE_PASSWORD, payload);
     return response.data;
   },
 
   // Announcements
   getAnnouncements: async (): Promise<StudentAnnouncement[]> => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/announcements`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.ANNOUNCEMENTS);
     return response.data.data || response.data;
   },
 
   getAnnouncementById: async (id: string): Promise<StudentAnnouncement> => {
-    const response = await apiClient.get(`${API_BASE_URL}/supervisor/announcements/${id}`);
+    const response = await apiClient.get(ENDPOINTS.SUPERVISOR.ANNOUNCEMENT_BY_ID(id));
     return response.data.data || response.data;
   },
 };
