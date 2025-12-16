@@ -259,6 +259,10 @@ export const supervisorApi = {
   // Panels and Schedules
   getMyPanels: async () => {
     const response = await apiClient.get(ENDPOINTS.SUPERVISOR.MY_PANELS);
+    // Backend returns nested structure: { statusCode, message, data: { message, totalPanels, panels }, timestamp }
+    if (response.data?.data) {
+      return response.data.data; // Returns { message, totalPanels, panels }
+    }
     if (Array.isArray(response.data)) {
       return { panels: response.data };
     }
@@ -267,6 +271,10 @@ export const supervisorApi = {
 
   getMyPanelSchedules: async () => {
     const response = await apiClient.get(ENDPOINTS.SUPERVISOR.MY_PANEL_SCHEDULES);
+    // Backend returns nested structure: { statusCode, message, data: { message, totalSchedules, schedules }, timestamp }
+    if (response.data?.data) {
+      return response.data.data; // Returns { message, totalSchedules, schedules }
+    }
     if (Array.isArray(response.data)) {
       return { schedules: response.data };
     }
@@ -275,6 +283,10 @@ export const supervisorApi = {
 
   getAssignedGroupsSchedules: async () => {
     const response = await apiClient.get(ENDPOINTS.SUPERVISOR.ASSIGNED_GROUPS_SCHEDULES);
+    // Backend returns nested structure: { statusCode, message, data: { message, totalAssignedGroups, scheduledCount, unscheduledCount, schedules, unscheduledGroups }, timestamp }
+    if (response.data?.data) {
+      return response.data.data; // Returns { message, totalAssignedGroups, scheduledCount, unscheduledCount, schedules, unscheduledGroups }
+    }
     if (Array.isArray(response.data)) {
       return { schedules: response.data, unscheduledGroups: [], totalAssignedGroups: 0, scheduledCount: 0, unscheduledCount: 0 };
     }
