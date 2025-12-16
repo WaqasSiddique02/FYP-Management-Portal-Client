@@ -104,8 +104,8 @@ export default function DemoDetailsPage() {
     try {
       setLoading(true);
       const [scheduleResponse, panelResponse] = await Promise.all([
-        apiClient.get(ENDPOINTS.SCHEDULE.MY_SCHEDULE),
-        apiClient.get(ENDPOINTS.SCHEDULE.MY_PANEL),
+        apiClient.get(ENDPOINTS.SCHEDULES.MY_SCHEDULE),
+        apiClient.get(ENDPOINTS.SCHEDULES.MY_PANEL),
       ]);
       
       setScheduleData(scheduleResponse.data.data);
