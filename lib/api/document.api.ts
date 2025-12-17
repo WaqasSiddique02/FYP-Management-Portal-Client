@@ -15,6 +15,11 @@ export const documentAPI = {
     return response.data;
   },
 
+  submitProposal: async (proposalId: string) => {
+    const response = await apiClient.put(ENDPOINTS.PROPOSAL.SUBMIT(proposalId));
+    return response.data;
+  },
+
   // Get all documents (includes proposal and other documents)
   getMyDocuments: async () => {
     const response = await apiClient.get(ENDPOINTS.DOCUMENTS.MY_DOCUMENTS);

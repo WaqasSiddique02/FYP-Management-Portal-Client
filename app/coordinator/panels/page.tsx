@@ -660,15 +660,15 @@ export default function EvaluationPanelsPage() {
 
         {/* View Panel Dialog */}
         <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-2xl">{selectedPanel?.name}</DialogTitle>
+              <DialogTitle className="text-xl sm:text-2xl">{selectedPanel?.name}</DialogTitle>
               <DialogDescription>
                 Evaluation panel details and members
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                 <Badge className={selectedPanel?.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                   {selectedPanel?.isActive ? 'Active' : 'Inactive'}
                 </Badge>
@@ -682,7 +682,7 @@ export default function EvaluationPanelsPage() {
                   <Separator />
                   <div>
                     <h3 className="font-semibold text-sm text-gray-500 mb-2">Description</h3>
-                    <p className="text-gray-700">{selectedPanel.description}</p>
+                    <p className="text-sm sm:text-base text-gray-700">{selectedPanel.description}</p>
                   </div>
                 </>
               )}
@@ -691,19 +691,19 @@ export default function EvaluationPanelsPage() {
 
               <div>
                 <h3 className="font-semibold text-sm text-gray-500 mb-3">Panel Members ({selectedPanel?.members?.length || 0})</h3>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3 max-h-[40vh] overflow-y-auto pr-2">
                   {(selectedPanel?.members || []).map((member) => (
-                    <div key={member._id} className="bg-gray-50 rounded-lg p-4 border">
-                      <div className="flex items-start gap-3">
-                        <GraduationCap className="w-5 h-5 text-indigo-600 mt-1" />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">
+                    <div key={member._id} className="bg-gray-50 rounded-lg p-3 sm:p-4 border">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 mt-1 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm sm:text-base text-gray-900 truncate">
                             {member.firstName} {member.lastName}
                           </p>
-                          <p className="text-sm text-gray-600">{member.designation}</p>
-                          <p className="text-sm text-gray-600">{member.email}</p>
+                          <p className="text-xs sm:text-sm text-gray-600">{member.designation}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 truncate">{member.email}</p>
                           {member.specialization && (
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
                               Specialization: {member.specialization}
                             </p>
                           )}
@@ -716,19 +716,19 @@ export default function EvaluationPanelsPage() {
 
               <Separator />
 
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
                 <h3 className="font-semibold text-sm text-gray-500 mb-2">Created By</h3>
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <User className="w-4 h-4 text-gray-500 shrink-0" />
                   <span className="text-gray-700">
                     {selectedPanel?.createdBy?.firstName} {selectedPanel?.createdBy?.lastName}
                   </span>
                   <span className="text-gray-500">•</span>
-                  <span className="text-sm text-gray-600">{selectedPanel?.createdBy?.email}</span>
+                  <span className="text-gray-600 break-all">{selectedPanel?.createdBy?.email}</span>
                 </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <Calendar className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
+                <div className="flex items-center gap-2 mt-2 text-sm">
+                  <Calendar className="w-4 h-4 text-gray-500 shrink-0" />
+                  <span className="text-gray-600">
                     Created on {selectedPanel?.createdAt && new Date(selectedPanel.createdAt).toLocaleDateString('en-US', {
                       month: 'long',
                       day: 'numeric',
@@ -739,7 +739,7 @@ export default function EvaluationPanelsPage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setViewDialogOpen(false)} className="w-full sm:w-auto">
                 Close
               </Button>
             </DialogFooter>

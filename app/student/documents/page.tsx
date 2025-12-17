@@ -151,12 +151,34 @@ export default function DocumentsPage() {
       setSuccess('');
 
       await documentAPI.uploadProposal(proposalFile);
-      setSuccess('Proposal uploaded successfully! Waiting for supervisor review.');
+      setSuccess('Proposal uploaded as draft. Click "Submit for Review" to send it to your supervisor.');
       setProposalFile(null);
       
       await fetchData();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to upload proposal');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleProposalSubmit = async () => {
+    if (!proposal?._id) {
+      setError('No proposal found to submit');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setError('');
+      setSuccess('');
+
+      await documentAPI.submitProposal(proposal._id);
+      setSuccess('Proposal submitted successfully! Your supervisor will review it soon.');
+      
+      await fetchData();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to submit proposal');
     } finally {
       setSubmitting(false);
     }
@@ -394,14 +416,53 @@ export default function DocumentsPage() {
                     </div>
                   )}
 
-                  <Button
-                    onClick={() => handleDownload(proposal.filePath)}
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Proposal
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      onClick={() => handleDownload(proposal.filePath)}
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Proposal
+                    </Button>
+                    {proposal.status === 'draft' && (
+                      <Button
+                        onClick={handleProposalSubmit}
+                        disabled={submitting}
+                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+                      >
+                        {submitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            Submit for Review
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {proposal?.status === 'draft' && (
+              <Card className="border-yellow-200 bg-yellow-50">
+                <CardContent className="py-4">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5 text-yellow-600 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-yellow-900">
+                        Proposal in Draft Mode
+                      </p>
+                      <p className="text-xs text-yellow-700 mt-1">
+                        Your proposal has been uploaded but not submitted yet. Click "Submit for Review" to send it to your supervisor.
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}

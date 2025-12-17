@@ -48,15 +48,22 @@ interface ProjectIdea {
 
 interface CustomIdea {
   _id: string;
-  groupId: {
+  group?: {
     _id: string;
     name: string;
+    leader?: any;
+    members?: any[];
   };
-  title: string;
-  description: string;
-  status: 'pending' | 'approved' | 'rejected';
+  customIdeaTitle?: string;
+  customIdeaDescription?: string;
+  title?: string;
+  description?: string;
+  ideaStatus?: 'pending' | 'approved' | 'rejected';
+  status?: 'pending' | 'approved' | 'rejected';
+  supervisorFeedback?: string;
   supervisorComment?: string;
-  submittedAt: string;
+  submittedAt?: string;
+  createdAt?: string;
 }
 
 export default function ProjectIdeasPage() {
@@ -185,9 +192,9 @@ export default function ProjectIdeasPage() {
     
     const filtered = customProjects.filter(
       (project) =>
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.groupId.name.toLowerCase().includes(searchQuery.toLowerCase())
+        (project.customIdeaTitle || project.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (project.customIdeaDescription || project.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (project.group?.name || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredCustomProjects(filtered);
   };
@@ -501,32 +508,32 @@ export default function ProjectIdeasPage() {
                         <div className="flex-1 space-y-3">
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
-                              <h3 className="text-xl font-bold text-slate-900 mb-1">{idea.title}</h3>
+                              <h3 className="text-xl font-bold text-slate-900 mb-1">{idea.customIdeaTitle || idea.title || 'Untitled'}</h3>
                               <div className="flex items-center gap-2 text-sm text-slate-600">
                                 <Users className="h-4 w-4" />
-                                {idea.groupId.name}
+                                {idea.group?.name || 'Unknown Group'}
                               </div>
                             </div>
-                            <Badge className={getStatusColor(idea.status)}>
+                            <Badge className={getStatusColor(idea.ideaStatus || idea.status || 'pending')}>
                               {idea.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
                               {idea.status === 'approved' && <CheckCircle2 className="h-3 w-3 mr-1" />}
                               {idea.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
-                              {idea.status.charAt(0).toUpperCase() + idea.status.slice(1)}
+                              {(idea.ideaStatus || idea.status || 'pending').charAt(0).toUpperCase() + (idea.ideaStatus || idea.status || 'pending').slice(1)}
                             </Badge>
                           </div>
                           
-                          <p className="text-slate-600 line-clamp-2">{idea.description}</p>
+                          <p className="text-slate-600 line-clamp-2">{idea.customIdeaDescription || idea.description || 'No description'}</p>
                           
-                          {idea.supervisorComment && (
+                          {(idea.supervisorFeedback || idea.supervisorComment) && (
                             <div className="bg-green-50 border-l-4 border-green-600 p-3 rounded-r">
                               <p className="text-xs font-semibold text-green-900 mb-1">Your Feedback</p>
-                              <p className="text-sm text-slate-700">{idea.supervisorComment}</p>
+                              <p className="text-sm text-slate-700">{idea.supervisorFeedback || idea.supervisorComment}</p>
                             </div>
                           )}
                           
                           <div className="flex items-center gap-2 text-xs text-slate-500 pt-2 border-t">
                             <Calendar className="h-3 w-3" />
-                            Submitted {new Date(idea.submittedAt).toLocaleDateString()}
+                            Submitted {(idea.submittedAt || idea.createdAt) ? new Date(idea.submittedAt || idea.createdAt || '').toLocaleDateString() : 'Unknown date'}
                           </div>
                         </div>
                         
@@ -569,24 +576,24 @@ export default function ProjectIdeasPage() {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Group</label>
-                  <p className="text-slate-900 mt-1">{selectedCustomIdea.groupId.name}</p>
+                  <p className="text-slate-900 mt-1">{selectedCustomIdea.group?.name || 'Unknown Group'}</p>
                 </div>
                 
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Project Title</label>
-                  <p className="text-slate-900 mt-1">{selectedCustomIdea.title}</p>
+                  <p className="text-slate-900 mt-1">{selectedCustomIdea.customIdeaTitle || selectedCustomIdea.title || 'Untitled'}</p>
                 </div>
                 
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Description</label>
-                  <p className="text-slate-700 mt-1 whitespace-pre-wrap">{selectedCustomIdea.description}</p>
+                  <p className="text-slate-700 mt-1 whitespace-pre-wrap">{selectedCustomIdea.customIdeaDescription || selectedCustomIdea.description || 'No description'}</p>
                 </div>
                 
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Status</label>
                   <div className="mt-1">
-                    <Badge className={getStatusColor(selectedCustomIdea.status)}>
-                      {selectedCustomIdea.status.charAt(0).toUpperCase() + selectedCustomIdea.status.slice(1)}
+                    <Badge className={getStatusColor(selectedCustomIdea.ideaStatus || selectedCustomIdea.status || 'pending')}>
+                      {(selectedCustomIdea.ideaStatus || selectedCustomIdea.status || 'pending').charAt(0).toUpperCase() + (selectedCustomIdea.ideaStatus || selectedCustomIdea.status || 'pending').slice(1)}
                     </Badge>
                   </div>
                 </div>

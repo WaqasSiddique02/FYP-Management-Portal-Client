@@ -55,10 +55,8 @@ interface GroupProject {
     title: string;
     description: string;
   };
-  customIdea?: {
-    title: string;
-    description: string;
-  };
+  customIdeaTitle?: string;
+  customIdeaDescription?: string;
   githubRepositoryUrl?: string;
   githubMarks?: number;
   githubFeedback?: string;
@@ -298,7 +296,7 @@ export default function EvaluationsPage() {
   };
 
   const getProjectTitle = (project: GroupProject) => {
-    return project.selectedIdea?.title || project.customIdea?.title || 'No Title';
+    return project.selectedIdea?.title || project.customIdeaTitle || 'No Title';
   };
 
   const filteredProjects = projects.filter((project) => {

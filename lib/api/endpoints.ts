@@ -82,6 +82,7 @@ export const ENDPOINTS = {
   },
   PROPOSAL: {
     UPLOAD: `${API_BASE_URL}/proposals`,
+    SUBMIT: (id: string) => `${API_BASE_URL}/proposals/${id}/submit`,
     MY_DOCUMENTS: `${API_BASE_URL}/documents/my-documents`,
   },
   DOCUMENTS: {

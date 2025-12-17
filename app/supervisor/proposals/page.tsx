@@ -50,7 +50,7 @@ interface Proposal {
   fileName: string;
   filePath: string;
   fileSize?: number;
-  status: 'pending' | 'approved' | 'rejected' | 'revision_requested';
+  status: 'draft' | 'submitted' | 'approved' | 'rejected';
   supervisorFeedback?: string;
   submittedAt: string;
   reviewedAt?: string;
@@ -244,10 +244,10 @@ export default function ProposalsPage() {
         return 'bg-green-100 text-green-800 border-green-200';
       case 'rejected':
         return 'bg-red-100 text-red-800 border-red-200';
-      case 'revision_requested':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'pending':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'submitted':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'draft':
+        return 'bg-slate-100 text-slate-800 border-slate-200';
       default:
         return 'bg-slate-100 text-slate-800 border-slate-200';
     }
@@ -259,10 +259,10 @@ export default function ProposalsPage() {
         return <CheckCircle2 className="h-3 w-3" />;
       case 'rejected':
         return <XCircle className="h-3 w-3" />;
-      case 'revision_requested':
-        return <MessageSquare className="h-3 w-3" />;
-      case 'pending':
+      case 'submitted':
         return <Clock className="h-3 w-3" />;
+      case 'draft':
+        return <FileText className="h-3 w-3" />;
       default:
         return null;
     }
@@ -272,7 +272,7 @@ export default function ProposalsPage() {
     return status.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
-  const statuses = ['all', 'pending', 'approved', 'rejected', 'revision_requested'];
+  const statuses = ['all', 'submitted', 'approved', 'rejected'];
 
   if (authLoading || loading) {
     return (
@@ -326,9 +326,9 @@ export default function ProposalsPage() {
               </div>
               <div className="bg-white/20 backdrop-blur-sm px-6 py-4 rounded-xl border border-white/30">
                 <p className="text-3xl font-bold">
-                  {proposals.filter((p) => p.status === 'pending').length}
+                  {proposals.filter((p) => p.status === 'submitted').length}
                 </p>
-                <p className="text-xs text-green-100 mt-1">Pending Review</p>
+                <p className="text-xs text-green-100 mt-1">Awaiting Review</p>
               </div>
             </div>
           </div>
@@ -574,7 +574,7 @@ export default function ProposalsPage() {
                   <div className="space-y-3 border-t pt-4">
                     <h4 className="font-bold text-slate-900 mb-3">Actions</h4>
                     
-                    {selectedProposal.status === 'pending' ? (
+                    {selectedProposal.status === 'submitted' ? (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Button
                           onClick={() => setDialogMode('approve')}
