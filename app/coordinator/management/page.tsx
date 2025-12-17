@@ -133,9 +133,17 @@ export default function ManagementPage() {
   const [filterAvailability, setFilterAvailability] = useState("all");
   const [selectedFaculty, setSelectedFaculty] = useState<Faculty | null>(null);
   const [addFacultyOpen, setAddFacultyOpen] = useState(false);
+  const [createSupervisorOpen, setCreateSupervisorOpen] = useState(false);
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
   const [viewFacultyOpen, setViewFacultyOpen] = useState(false);
   const [transferFacultyOpen, setTransferFacultyOpen] = useState(false);
   const [removeFacultyOpen, setRemoveFacultyOpen] = useState(false);
+
+  // Bulk upload states
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadResults, setUploadResults] = useState<{success: number, failed: number, errors: string[]} | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Loading States
   const [loadingDepartments, setLoadingDepartments] = useState(true);
@@ -188,10 +196,145 @@ export default function ManagementPage() {
     }
   };
 
+  // Parse CSV file
+  const parseCSV = (file: File): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target?.result as string;
+          const lines = text.split('\n').filter(line => line.trim());
+          
+          if (lines.length < 2) {
+            reject(new Error('CSV file must contain headers and at least one data row'));
+            return;
+          }
+
+          const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+          const data = [];
+
+          for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            const row: any = {};
+            headers.forEach((header, index) => {
+              row[header] = values[index] || '';
+            });
+            data.push(row);
+          }
+
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  };
+
+  // Handle bulk upload
+  const handleBulkUpload = async () => {
+    if (!csvFile) {
+      alert('Please select a CSV file');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setUploadProgress(0);
+      setUploadResults(null);
+
+      const supervisors = await parseCSV(csvFile);
+      
+      if (supervisors.length === 0) {
+        alert('No valid data found in CSV file');
+        setIsUploading(false);
+        return;
+      }
+
+      let successCount = 0;
+      let failedCount = 0;
+      const errors: string[] = [];
+
+      for (let i = 0; i < supervisors.length; i++) {
+        try {
+          const supervisor = supervisors[i];
+          const payload = {
+            email: supervisor.email,
+            firstName: supervisor.firstName,
+            lastName: supervisor.lastName,
+            phoneNumber: supervisor.phoneNumber || '',
+            employeeId: supervisor.employeeId || '',
+            designation: supervisor.designation || '',
+            department: supervisor.department,
+            specialization: supervisor.specialization || '',
+            officeLocation: supervisor.officeLocation || '',
+            officeHours: supervisor.officeHours || '',
+            maxStudents: parseInt(supervisor.maxStudents) || 12,
+          };
+
+          await apiClient.post(`${API_BASE_URL}/auth/supervisor/create`, payload);
+          successCount++;
+        } catch (error: any) {
+          failedCount++;
+          const errorMsg = error.response?.data?.message || 'Unknown error';
+          errors.push(`Row ${i + 2}: ${supervisors[i].email} - ${errorMsg}`);
+        }
+
+        setUploadProgress(Math.round(((i + 1) / supervisors.length) * 100));
+      }
+
+      setUploadResults({ success: successCount, failed: failedCount, errors });
+      await fetchAvailableSupervisors();
+      
+      if (failedCount === 0) {
+        setTimeout(() => {
+          setBulkUploadOpen(false);
+          setCsvFile(null);
+          setUploadResults(null);
+        }, 3000);
+      }
+    } catch (error: any) {
+      console.error('Error processing CSV:', error);
+      alert(error.message || 'Failed to process CSV file');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Download CSV template
+  const downloadCSVTemplate = () => {
+    const template = `firstName,lastName,email,department,phoneNumber,employeeId,designation,specialization,officeLocation,officeHours,maxStudents
+Dr. Jane,Smith,jane.smith@university.edu,Computer Science,03001234567,EMP-001,Associate Professor,Machine Learning,Room 301,Mon-Fri 2-4 PM,12
+Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assistant Professor,Data Science,Room 302,Tue-Thu 10-12 PM,10`;
+    
+    const blob = new Blob([template], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'supervisor_template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   const [transferData, setTransferData] = useState({
     fromDepartmentId: "",
     toDepartmentId: "",
     supervisorId: "",
+  });
+
+  const [newSupervisor, setNewSupervisor] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    employeeId: "",
+    designation: "",
+    department: "",
+    specialization: "",
+    officeLocation: "",
+    officeHours: "",
+    maxStudents: "12",
   });
 
   // Fetch Departments
@@ -545,6 +688,39 @@ export default function ManagementPage() {
   };
 
   // Faculty Operations
+  const handleCreateSupervisor = async () => {
+    try {
+      const payload = {
+        ...newSupervisor,
+        maxStudents: parseInt(newSupervisor.maxStudents) || 12,
+      };
+      const response = await apiClient.post(
+        `${API_BASE_URL}/auth/supervisor/create`,
+        payload
+      );
+      console.log('Supervisor created successfully:', response.data);
+      setCreateSupervisorOpen(false);
+      setNewSupervisor({
+        email: "",
+        firstName: "",
+        lastName: "",
+        phoneNumber: "",
+        employeeId: "",
+        designation: "",
+        department: "",
+        specialization: "",
+        officeLocation: "",
+        officeHours: "",
+        maxStudents: "12",
+      });
+      await fetchAvailableSupervisors();
+      alert('Supervisor created successfully! They can now be assigned to departments.');
+    } catch (error: any) {
+      console.error("Error creating supervisor:", error);
+      alert(error.response?.data?.message || 'Failed to create supervisor');
+    }
+  };
+
   const handleAddFaculty = async () => {
     try {
       const response = await apiClient.post(
@@ -1092,7 +1268,38 @@ export default function ManagementPage() {
                       </Select>
                     </div>
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-3">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Create Supervisors
+                          <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56 bg-white">
+                        <DropdownMenuLabel className="text-xs font-semibold text-slate-600">
+                          Creation Options
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => setCreateSupervisorOpen(true)}
+                          className="cursor-pointer"
+                        >
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Create Single Supervisor
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setBulkUploadOpen(true)}
+                          className="cursor-pointer"
+                        >
+                          <Users className="h-4 w-4 mr-2" />
+                          Bulk Upload (CSV)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Dialog open={addFacultyOpen} onOpenChange={setAddFacultyOpen}>
                       <DialogTrigger asChild>
                         <Button 
@@ -1649,6 +1856,392 @@ export default function ManagementPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Bulk Upload Supervisors Dialog */}
+        <Dialog open={bulkUploadOpen} onOpenChange={(open) => {
+          if (!isUploading) {
+            setBulkUploadOpen(open);
+            if (!open) {
+              setCsvFile(null);
+              setUploadResults(null);
+              setUploadProgress(0);
+            }
+          }
+        }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-slate-900">
+                Bulk Upload Supervisors
+              </DialogTitle>
+              <DialogDescription className="text-slate-600">
+                Upload a CSV file to create multiple supervisors at once
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {/* CSV Template Download */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-800">
+                      <p className="font-semibold mb-1">CSV Format Required</p>
+                      <p className="mb-2">Download the template to see the correct format. Required fields: firstName, lastName, email, department</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={downloadCSVTemplate}
+                    className="border-blue-300 text-blue-700 hover:bg-blue-100 shrink-0"
+                  >
+                    Download Template
+                  </Button>
+                </div>
+              </div>
+
+              {/* File Upload */}
+              {!uploadResults && (
+                <div className="space-y-2">
+                  <Label htmlFor="csv-file">Select CSV File *</Label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      id="csv-file"
+                      type="file"
+                      accept=".csv"
+                      onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                      disabled={isUploading}
+                      className="border-slate-300 cursor-pointer"
+                    />
+                    {csvFile && (
+                      <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">
+                        {csvFile.name}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Progress */}
+              {isUploading && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Upload Progress</Label>
+                    <span className="text-sm font-semibold text-slate-900">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-slate-200 rounded-full h-3">
+                    <div
+                      className="bg-indigo-600 h-3 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-slate-600 text-center">Processing supervisors...</p>
+                </div>
+              )}
+
+              {/* Upload Results */}
+              {uploadResults && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Card className="border-emerald-300 bg-emerald-50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-emerald-600 font-medium">Successful</p>
+                            <p className="text-3xl font-bold text-emerald-900">{uploadResults.success}</p>
+                          </div>
+                          <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-red-300 bg-red-50">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-red-600 font-medium">Failed</p>
+                            <p className="text-3xl font-bold text-red-900">{uploadResults.failed}</p>
+                          </div>
+                          <AlertCircle className="h-8 w-8 text-red-600" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {uploadResults.errors.length > 0 && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-h-60 overflow-y-auto">
+                      <p className="font-semibold text-red-900 mb-2">Errors:</p>
+                      <ul className="space-y-1">
+                        {uploadResults.errors.map((error, index) => (
+                          <li key={index} className="text-sm text-red-800">
+                            • {error}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {uploadResults.failed === 0 && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                        <p className="text-sm text-emerald-800 font-medium">
+                          All supervisors created successfully! This dialog will close automatically.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setBulkUploadOpen(false);
+                  setCsvFile(null);
+                  setUploadResults(null);
+                  setUploadProgress(0);
+                }}
+                disabled={isUploading}
+                className="border-slate-300"
+              >
+                {uploadResults ? 'Close' : 'Cancel'}
+              </Button>
+              {!uploadResults && (
+                <Button
+                  onClick={handleBulkUpload}
+                  disabled={!csvFile || isUploading}
+                  className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Users className="h-4 w-4 mr-2" />
+                      Upload & Create
+                    </>
+                  )}
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create Supervisor Dialog */}
+        <Dialog open={createSupervisorOpen} onOpenChange={setCreateSupervisorOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-slate-900">
+                Create New Supervisor
+              </DialogTitle>
+              <DialogDescription className="text-slate-600">
+                Create a new supervisor account in the system
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-firstName">First Name *</Label>
+                  <Input
+                    id="supervisor-firstName"
+                    placeholder="John"
+                    value={newSupervisor.firstName}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, firstName: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-lastName">Last Name *</Label>
+                  <Input
+                    id="supervisor-lastName"
+                    placeholder="Doe"
+                    value={newSupervisor.lastName}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, lastName: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="supervisor-email">Email *</Label>
+                <Input
+                  id="supervisor-email"
+                  type="email"
+                  placeholder="john.doe@university.edu"
+                  value={newSupervisor.email}
+                  onChange={(e) =>
+                    setNewSupervisor({ ...newSupervisor, email: e.target.value })
+                  }
+                  className="border-slate-300"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-phone">Phone Number</Label>
+                  <Input
+                    id="supervisor-phone"
+                    placeholder="+92-300-1234567"
+                    value={newSupervisor.phoneNumber}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, phoneNumber: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-employeeId">Employee ID</Label>
+                  <Input
+                    id="supervisor-employeeId"
+                    placeholder="EMP-12345"
+                    value={newSupervisor.employeeId}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, employeeId: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="supervisor-department">Department *</Label>
+                <Select
+                  value={newSupervisor.department}
+                  onValueChange={(value) =>
+                    setNewSupervisor({ ...newSupervisor, department: value })
+                  }
+                >
+                  <SelectTrigger className="border-slate-300 bg-white">
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {departments.map((dept) => (
+                      <SelectItem key={dept._id} value={dept.name}>
+                        {dept.name} ({dept.code})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-designation">Designation</Label>
+                  <Input
+                    id="supervisor-designation"
+                    placeholder="Assistant Professor"
+                    value={newSupervisor.designation}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, designation: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-specialization">Specialization</Label>
+                  <Input
+                    id="supervisor-specialization"
+                    placeholder="Machine Learning"
+                    value={newSupervisor.specialization}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, specialization: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-officeLocation">Office Location</Label>
+                  <Input
+                    id="supervisor-officeLocation"
+                    placeholder="Room 301, CS Building"
+                    value={newSupervisor.officeLocation}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, officeLocation: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="supervisor-maxStudents">Max Students</Label>
+                  <Input
+                    id="supervisor-maxStudents"
+                    type="number"
+                    placeholder="12"
+                    value={newSupervisor.maxStudents}
+                    onChange={(e) =>
+                      setNewSupervisor({ ...newSupervisor, maxStudents: e.target.value })
+                    }
+                    className="border-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="supervisor-officeHours">Office Hours</Label>
+                <Input
+                  id="supervisor-officeHours"
+                  placeholder="Mon-Wed 2:00 PM - 4:00 PM"
+                  value={newSupervisor.officeHours}
+                  onChange={(e) =>
+                    setNewSupervisor({ ...newSupervisor, officeHours: e.target.value })
+                  }
+                  className="border-slate-300"
+                />
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                  <div className="text-sm text-blue-800">
+                    <p className="font-semibold mb-1">Note</p>
+                    <p>The supervisor will receive an email with instructions to set their password. After creation, you can assign them to departments.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCreateSupervisorOpen(false);
+                  setNewSupervisor({
+                    email: "",
+                    firstName: "",
+                    lastName: "",
+                    phoneNumber: "",
+                    employeeId: "",
+                    designation: "",
+                    department: "",
+                    specialization: "",
+                    officeLocation: "",
+                    officeHours: "",
+                    maxStudents: "12",
+                  });
+                }}
+                className="border-slate-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateSupervisor}
+                disabled={!newSupervisor.email || !newSupervisor.firstName || !newSupervisor.lastName || !newSupervisor.department}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Create Supervisor
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* View Student Dialog */}
         <Dialog open={viewStudentOpen} onOpenChange={setViewStudentOpen}>
