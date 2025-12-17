@@ -142,8 +142,9 @@ export default function ManagementPage() {
   // Bulk upload states
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [uploadResults, setUploadResults] = useState<{success: number, failed: number, errors: string[]} | null>(null);
+  const [uploadResults, setUploadResults] = useState<{success: number, failed: number, errors: string[], successDetails: Array<{email: string, password: string}>} | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [createdSupervisor, setCreatedSupervisor] = useState<{email: string, password: string, name: string} | null>(null);
 
   // Loading States
   const [loadingDepartments, setLoadingDepartments] = useState(true);
@@ -255,6 +256,7 @@ export default function ManagementPage() {
       let successCount = 0;
       let failedCount = 0;
       const errors: string[] = [];
+      const successDetails: Array<{email: string, password: string}> = [];
 
       for (let i = 0; i < supervisors.length; i++) {
         try {
@@ -273,7 +275,14 @@ export default function ManagementPage() {
             maxStudents: parseInt(supervisor.maxStudents) || 12,
           };
 
-          await apiClient.post(`${API_BASE_URL}/auth/supervisor/create`, payload);
+          const response = await apiClient.post(`${API_BASE_URL}/auth/supervisor/create`, payload);
+          const responseData = response.data?.data || response.data;
+          const tempPassword = responseData.temporaryPassword || 'N/A';
+          
+          successDetails.push({
+            email: supervisor.email,
+            password: tempPassword
+          });
           successCount++;
         } catch (error: any) {
           failedCount++;
@@ -284,7 +293,7 @@ export default function ManagementPage() {
         setUploadProgress(Math.round(((i + 1) / supervisors.length) * 100));
       }
 
-      setUploadResults({ success: successCount, failed: failedCount, errors });
+      setUploadResults({ success: successCount, failed: failedCount, errors, successDetails });
       await fetchAvailableSupervisors();
       
       if (failedCount === 0) {
@@ -313,6 +322,34 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
     const a = document.createElement('a');
     a.href = url;
     a.download = 'supervisor_template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Copy text to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!');
+    }).catch(() => {
+      alert('Failed to copy');
+    });
+  };
+
+  // Download credentials as text file
+  const downloadCredentials = (credentials: Array<{email: string, password: string}>) => {
+    let content = 'SUPERVISOR LOGIN CREDENTIALS\n';
+    content += '============================\n\n';
+    credentials.forEach((cred, index) => {
+      content += `${index + 1}. Email: ${cred.email}\n`;
+      content += `   Password: ${cred.password}\n\n`;
+    });
+    content += 'NOTE: These are temporary passwords. Supervisors must change their password upon first login.\n';
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `supervisor_credentials_${new Date().toISOString().split('T')[0]}.txt`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -699,7 +736,20 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
         payload
       );
       console.log('Supervisor created successfully:', response.data);
-      setCreateSupervisorOpen(false);
+      
+      // Extract supervisor details and temporary password from response
+      const responseData = response.data?.data || response.data;
+      const tempPassword = responseData.temporaryPassword || '';
+      const supervisor = responseData.supervisor || {};
+      
+      // Store created supervisor details with temp password
+      setCreatedSupervisor({
+        email: supervisor.email || newSupervisor.email,
+        password: tempPassword,
+        name: supervisor.fullName || `${newSupervisor.firstName} ${newSupervisor.lastName}`
+      });
+      
+      // Don't close dialog yet - show the password first
       setNewSupervisor({
         email: "",
         firstName: "",
@@ -714,7 +764,6 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
         maxStudents: "12",
       });
       await fetchAvailableSupervisors();
-      alert('Supervisor created successfully! They can now be assigned to departments.');
     } catch (error: any) {
       console.error("Error creating supervisor:", error);
       alert(error.response?.data?.message || 'Failed to create supervisor');
@@ -1966,6 +2015,50 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
                     </Card>
                   </div>
 
+                  {uploadResults.success > 0 && uploadResults.successDetails.length > 0 && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="font-semibold text-emerald-900 flex items-center gap-2">
+                          <CheckCircle2 className="h-5 w-5" />
+                          Created Supervisors - Temporary Passwords
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => downloadCredentials(uploadResults.successDetails)}
+                          className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                        >
+                          Download All
+                        </Button>
+                      </div>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {uploadResults.successDetails.map((detail, index) => (
+                          <div key={index} className="bg-white border border-emerald-200 rounded-lg p-3">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-slate-900 truncate">{detail.email}</p>
+                                <p className="text-sm text-slate-600 mt-1 font-mono">
+                                  Password: <span className="font-bold text-emerald-700">{detail.password}</span>
+                                </p>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => copyToClipboard(`Email: ${detail.email}\nPassword: ${detail.password}`)}
+                                className="shrink-0 h-8 px-2"
+                              >
+                                Copy
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-emerald-700 mt-3">
+                        ⚠️ Important: Save these credentials securely. Supervisors must use these temporary passwords for first login.
+                      </p>
+                    </div>
+                  )}
+
                   {uploadResults.errors.length > 0 && (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-h-60 overflow-y-auto">
                       <p className="font-semibold text-red-900 mb-2">Errors:</p>
@@ -1976,17 +2069,6 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
                           </li>
                         ))}
                       </ul>
-                    </div>
-                  )}
-
-                  {uploadResults.failed === 0 && (
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                        <p className="text-sm text-emerald-800 font-medium">
-                          All supervisors created successfully! This dialog will close automatically.
-                        </p>
-                      </div>
                     </div>
                   )}
                 </div>
@@ -2030,17 +2112,98 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
         </Dialog>
 
         {/* Create Supervisor Dialog */}
-        <Dialog open={createSupervisorOpen} onOpenChange={setCreateSupervisorOpen}>
+        <Dialog open={createSupervisorOpen} onOpenChange={(open) => {
+          setCreateSupervisorOpen(open);
+          if (!open) {
+            setCreatedSupervisor(null);
+          }
+        }}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-slate-900">
-                Create New Supervisor
+                {createdSupervisor ? 'Supervisor Created Successfully!' : 'Create New Supervisor'}
               </DialogTitle>
               <DialogDescription className="text-slate-600">
-                Create a new supervisor account in the system
+                {createdSupervisor 
+                  ? 'Save these login credentials securely'
+                  : 'Create a new supervisor account in the system'}
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 py-4">
+            
+            {createdSupervisor ? (
+              /* Success View - Show Temporary Password */
+              <div className="space-y-4 py-4">
+                <div className="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="bg-emerald-200 p-3 rounded-xl">
+                      <CheckCircle2 className="h-8 w-8 text-emerald-700" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-emerald-900 mb-1">
+                        {createdSupervisor.name}
+                      </h3>
+                      <p className="text-sm text-emerald-700">Supervisor account created successfully</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="bg-white border border-emerald-200 rounded-lg p-4">
+                      <Label className="text-emerald-700 font-semibold mb-2 block">Email Address</Label>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-slate-900 font-mono text-lg">{createdSupervisor.email}</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(createdSupervisor.email)}
+                          className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                        >
+                          Copy
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-emerald-200 rounded-lg p-4">
+                      <Label className="text-emerald-700 font-semibold mb-2 block">Temporary Password</Label>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-emerald-700 font-mono text-lg font-bold">{createdSupervisor.password}</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(createdSupervisor.password)}
+                          className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                        >
+                          Copy
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-800">
+                      <p className="font-semibold mb-2">Important Instructions:</p>
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>Share these credentials with the supervisor securely</li>
+                        <li>Supervisor must login with this temporary password first</li>
+                        <li>After first login, they will be prompted to change their password</li>
+                        <li>You can now assign this supervisor to departments</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => copyToClipboard(`Email: ${createdSupervisor.email}\nPassword: ${createdSupervisor.password}`)}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  Copy Both Credentials
+                </Button>
+              </div>
+            ) : (
+              /* Form View - Create Supervisor */
+              <div className="space-y-4 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="supervisor-firstName">First Name *</Label>
@@ -2207,38 +2370,54 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
+            )}
+            
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setCreateSupervisorOpen(false);
-                  setNewSupervisor({
-                    email: "",
-                    firstName: "",
-                    lastName: "",
-                    phoneNumber: "",
-                    employeeId: "",
-                    designation: "",
-                    department: "",
-                    specialization: "",
-                    officeLocation: "",
-                    officeHours: "",
-                    maxStudents: "12",
-                  });
-                }}
-                className="border-slate-300"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreateSupervisor}
-                disabled={!newSupervisor.email || !newSupervisor.firstName || !newSupervisor.lastName || !newSupervisor.department}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Create Supervisor
-              </Button>
+              {createdSupervisor ? (
+                <Button
+                  onClick={() => {
+                    setCreateSupervisorOpen(false);
+                    setCreatedSupervisor(null);
+                  }}
+                  className="bg-slate-800 hover:bg-slate-900 text-white"
+                >
+                  Done
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setCreateSupervisorOpen(false);
+                      setNewSupervisor({
+                        email: "",
+                        firstName: "",
+                        lastName: "",
+                        phoneNumber: "",
+                        employeeId: "",
+                        designation: "",
+                        department: "",
+                        specialization: "",
+                        officeLocation: "",
+                        officeHours: "",
+                        maxStudents: "12",
+                      });
+                    }}
+                    className="border-slate-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateSupervisor}
+                    disabled={!newSupervisor.email || !newSupervisor.firstName || !newSupervisor.lastName || !newSupervisor.department}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Create Supervisor
+                  </Button>
+                </>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
