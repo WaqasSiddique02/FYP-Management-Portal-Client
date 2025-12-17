@@ -83,6 +83,7 @@ export default function RegisterFYPPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [studentDepartment, setStudentDepartment] = useState(''); // Store student's registered department
   const [groupName, setGroupName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchedStudent[]>([]);
@@ -106,6 +107,11 @@ export default function RegisterFYPPage() {
       const student = profileData.student;
       
       if (student?.isRegisteredForFYP) {
+        // Store the student's department ID
+        if (student.department) {
+          setStudentDepartment(typeof student.department === 'string' ? student.department : student.department._id);
+        }
+        
         // Student already registered, check if they have a group
         if (profileData.group) {
           // Already has a group, show group details
@@ -192,6 +198,7 @@ export default function RegisterFYPPage() {
     setError('');
     try {
       await studentAPI.registerFYP(selectedDepartment);
+      setStudentDepartment(selectedDepartment); // Store the selected department
       setCurrentStep(2);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to register for FYP');
