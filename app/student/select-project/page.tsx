@@ -100,7 +100,15 @@ export default function SelectProjectPage() {
 
       setIdeas(ideasData.ideas || []);
       setSupervisor(ideasData.supervisor || projectData?.supervisor || null);
-      setMyProject(projectData || null);
+      
+      // Only set project if it has valid data:
+      // - Must have _id (exists in DB)
+      // - Must have either selectedIdea OR customIdeaTitle (actual project selection made)
+      if (projectData && projectData._id && (projectData.selectedIdea || projectData.customIdeaTitle)) {
+        setMyProject(projectData);
+      } else {
+        setMyProject(null);
+      }
     } catch (err: any) {
       console.error('Error fetching data:', err);
       setError(err.response?.data?.message || 'Failed to load project data');
