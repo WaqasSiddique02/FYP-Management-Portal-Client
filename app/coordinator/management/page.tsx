@@ -142,6 +142,10 @@ export default function ManagementPage() {
   const [loadingFaculties, setLoadingFaculties] = useState(true);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [loadingUserSummary, setLoadingUserSummary] = useState(true);
+  const [loadingSupervisors, setLoadingSupervisors] = useState(false);
+
+  // Supervisors list for adding faculty
+  const [availableSupervisors, setAvailableSupervisors] = useState<any[]>([]);
 
   // Users & Students States
   const [students, setStudents] = useState<Student[]>([]);
@@ -164,6 +168,25 @@ export default function ManagementPage() {
     supervisorId: "",
     departmentId: "",
   });
+
+  // Fetch all supervisors (users with role 'supervisor')
+  const fetchAvailableSupervisors = async () => {
+    try {
+      setLoadingSupervisors(true);
+      const response = await apiClient.get(`${API_BASE_URL}/users`, { 
+        params: { role: 'supervisor' } 
+      });
+      const supervisorsData = response.data?.data || response.data;
+      const usersArray = supervisorsData?.users || supervisorsData || [];
+      
+      setAvailableSupervisors(Array.isArray(usersArray) ? usersArray : []);
+    } catch (error) {
+      console.error("Error fetching supervisors:", error);
+      setAvailableSupervisors([]);
+    } finally {
+      setLoadingSupervisors(false);
+    }
+  };
 
   const [transferData, setTransferData] = useState({
     fromDepartmentId: "",
@@ -1025,47 +1048,156 @@ export default function ManagementPage() {
             {/* Faculty Search and Filters */}
             <Card className="border-slate-300 bg-white shadow-md">
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="md:col-span-2">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500" />
-                      <Input
-                        placeholder="Search faculty..."
-                        value={facultySearchQuery}
-                        onChange={(e) => setFacultySearchQuery(e.target.value)}
-                        className="pl-10 border-slate-300 bg-white"
-                      />
+                <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="md:col-span-2">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-500" />
+                        <Input
+                          placeholder="Search faculty..."
+                          value={facultySearchQuery}
+                          onChange={(e) => setFacultySearchQuery(e.target.value)}
+                          className="pl-10 border-slate-300 bg-white"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+                        <SelectTrigger className="border-slate-300 bg-white">
+                          <SelectValue placeholder="All Departments" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="all">All Departments</SelectItem>
+                          {departments.map((dept) => (
+                            <SelectItem key={dept._id} value={dept.name}>
+                              {dept.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Select
+                        value={filterAvailability}
+                        onValueChange={setFilterAvailability}
+                      >
+                        <SelectTrigger className="border-slate-300 bg-white">
+                          <SelectValue placeholder="All Status" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="all">All Status</SelectItem>
+                          <SelectItem value="available">Available</SelectItem>
+                          <SelectItem value="unavailable">At Capacity</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                  <div>
-                    <Select value={filterDepartment} onValueChange={setFilterDepartment}>
-                      <SelectTrigger className="border-slate-300 bg-white">
-                        <SelectValue placeholder="All Departments" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="all">All Departments</SelectItem>
-                        {departments.map((dept) => (
-                          <SelectItem key={dept._id} value={dept.name}>
-                            {dept.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Select
-                      value={filterAvailability}
-                      onValueChange={setFilterAvailability}
-                    >
-                      <SelectTrigger className="border-slate-300 bg-white">
-                        <SelectValue placeholder="All Status" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="unavailable">At Capacity</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="flex justify-end">
+                    <Dialog open={addFacultyOpen} onOpenChange={setAddFacultyOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                          onClick={fetchAvailableSupervisors}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Faculty
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-white">
+                        <DialogHeader>
+                          <DialogTitle className="text-2xl font-bold text-slate-900">
+                            Add Faculty to Department
+                          </DialogTitle>
+                          <DialogDescription className="text-slate-600">
+                            Assign an existing supervisor to a department
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="faculty-dept">Department *</Label>
+                            <Select
+                              value={newFaculty.departmentId}
+                              onValueChange={(value) =>
+                                setNewFaculty({ ...newFaculty, departmentId: value })
+                              }
+                            >
+                              <SelectTrigger className="border-slate-300 bg-white">
+                                <SelectValue placeholder="Select department" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                {departments.map((dept) => (
+                                  <SelectItem key={dept._id} value={dept._id}>
+                                    {dept.name} ({dept.code})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="faculty-supervisor">Supervisor *</Label>
+                            {loadingSupervisors ? (
+                              <div className="flex items-center justify-center py-4">
+                                <Loader2 className="h-5 w-5 animate-spin text-slate-700" />
+                              </div>
+                            ) : (
+                              <Select
+                                value={newFaculty.supervisorId}
+                                onValueChange={(value) =>
+                                  setNewFaculty({ ...newFaculty, supervisorId: value })
+                                }
+                              >
+                                <SelectTrigger className="border-slate-300 bg-white">
+                                  <SelectValue placeholder="Select supervisor" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white max-h-[300px]">
+                                  {availableSupervisors.length === 0 ? (
+                                    <div className="p-4 text-center text-sm text-slate-600">
+                                      No supervisors available
+                                    </div>
+                                  ) : (
+                                    availableSupervisors.map((supervisor) => (
+                                      <SelectItem key={supervisor._id} value={supervisor._id}>
+                                        {supervisor.fullName || 
+                                          `${supervisor.firstName || ''} ${supervisor.lastName || ''}`.trim() || 
+                                          supervisor.email}
+                                        {supervisor.email && (
+                                          <span className="text-xs text-slate-500 ml-2">
+                                            ({supervisor.email})
+                                          </span>
+                                        )}
+                                      </SelectItem>
+                                    ))
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            )}
+                            <p className="text-xs text-slate-500">
+                              Only users with supervisor role are shown
+                            </p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setAddFacultyOpen(false);
+                              setNewFaculty({ supervisorId: "", departmentId: "" });
+                            }}
+                            className="border-slate-300"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={handleAddFaculty}
+                            disabled={!newFaculty.departmentId || !newFaculty.supervisorId}
+                            className="bg-slate-800 hover:bg-slate-900 text-white disabled:opacity-50"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Faculty
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </CardContent>
