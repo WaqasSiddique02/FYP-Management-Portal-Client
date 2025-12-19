@@ -6,21 +6,21 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 interface PerformanceChartProps {
   feedback: {
-    proposalMarks: number;
-    implementationMarks: number;
-    documentationMarks: number;
-    presentationMarks: number;
-    githubMarks: number;
+    proposalMarks: number | null;
+    implementationMarks: number | null;
+    documentationMarks: number | null;
+    presentationMarks: number | null;
+    githubMarks: number | null;
   };
 }
 
 export default function PerformanceChart({ feedback }: PerformanceChartProps) {
   const data = [
-    { name: 'Proposal', marks: feedback.proposalMarks, total: 20, color: '#3b82f6' },
-    { name: 'Implementation', marks: feedback.implementationMarks, total: 30, color: '#8b5cf6' },
-    { name: 'Documentation', marks: feedback.documentationMarks, total: 20, color: '#10b981' },
-    { name: 'Presentation', marks: feedback.presentationMarks, total: 15, color: '#f59e0b' },
-    { name: 'GitHub', marks: feedback.githubMarks, total: 15, color: '#ef4444' },
+    { name: 'Proposal', marks: feedback.proposalMarks || 0, total: 20, color: '#3b82f6' },
+    { name: 'Implementation', marks: feedback.implementationMarks || 0, total: 30, color: '#8b5cf6' },
+    { name: 'Documentation', marks: feedback.documentationMarks || 0, total: 20, color: '#10b981' },
+    { name: 'Presentation', marks: feedback.presentationMarks || 0, total: 15, color: '#f59e0b' },
+    { name: 'GitHub', marks: feedback.githubMarks || 0, total: 15, color: '#ef4444' },
   ];
 
   return (

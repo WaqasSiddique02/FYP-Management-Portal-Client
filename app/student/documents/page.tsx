@@ -104,15 +104,28 @@ export default function DocumentsPage() {
 
       const [documentsResponse, githubResponse] = await Promise.all([
         documentAPI.getMyDocuments().catch(() => ({ data: null })),
-        documentAPI.getMyGithub().catch(() => ({ data: null })),
+        documentAPI.getMyGithub().catch((err) => {
+          console.log('GitHub fetch error:', err);
+          return { data: null };
+        }),
       ]);
 
       // Handle documents response
       const documentsData = documentsResponse.data?.data || documentsResponse.data || documentsResponse;
-      const githubData = githubResponse.data?.github || githubResponse.github || githubResponse.data || null;
+      
+      // Handle GitHub response - check multiple possible structures
+      let githubData = null;
+      if (githubResponse?.data?.data?.github) {
+        githubData = githubResponse.data.data.github;
+      } else if (githubResponse?.data?.github) {
+        githubData = githubResponse.data.github;
+      } else if (githubResponse?.github) {
+        githubData = githubResponse.github;
+      }
 
       console.log('Documents Response:', documentsData);
-      console.log('GitHub Data:', githubData);
+      console.log('GitHub Response Full:', githubResponse);
+      console.log('GitHub Data Extracted:', githubData);
 
       // Separate proposal and documents
       let proposalDoc = null;

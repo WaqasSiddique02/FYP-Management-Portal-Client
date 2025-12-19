@@ -52,7 +52,7 @@ export const documentAPI = {
   // GitHub APIs
   submitGithub: async (repositoryUrl: string) => {
     const response = await apiClient.post(ENDPOINTS.PROJECT.SUBMIT_GITHUB, {
-      repositoryUrl,
+      githubRepositoryUrl: repositoryUrl,
     });
     return response.data;
   },
