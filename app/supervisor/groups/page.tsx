@@ -133,12 +133,11 @@ export default function SupervisorGroupsPage() {
 
     try {
       setSubmitting(true);
-      const payload = comment ? { comment } : {};
 
       if (expandedGroupDetails.projectIdea.isCustomIdea) {
-        await supervisorApi.approveCustomIdea(expandedGroupDetails.projectIdea.id || expandedGroupDetails.id, payload);
+        await supervisorApi.approveCustomIdea(expandedGroupDetails.projectIdea.id || expandedGroupDetails.id, {});
       } else {
-        await supervisorApi.approveSelectedIdea(expandedGroupDetails.projectIdea.id || expandedGroupDetails.id, payload);
+        await supervisorApi.approveSelectedIdea(expandedGroupDetails.projectIdea.id || expandedGroupDetails.id, {});
       }
 
       toast.success('Project idea approved successfully');
