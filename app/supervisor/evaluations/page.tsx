@@ -116,6 +116,7 @@ export default function EvaluationsPage() {
   });
   const [finalFeedback, setFinalFeedback] = useState('');
   const [savingMarks, setSavingMarks] = useState(false);
+  const [confirmCompleteDialogOpen, setConfirmCompleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -280,14 +281,11 @@ export default function EvaluationsPage() {
   const handleCompleteEvaluation = async () => {
     if (!selectedProject) return;
 
-    if (!confirm('Are you sure you want to mark this evaluation as complete? This action cannot be undone.')) {
-      return;
-    }
-
     try {
       setSavingMarks(true);
       await supervisorApi.completeEvaluation(selectedProject._id);
       toast.success('Evaluation marked as complete');
+      setConfirmCompleteDialogOpen(false);
       fetchProjects();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to complete evaluation');
@@ -807,7 +805,7 @@ export default function EvaluationsPage() {
                                   Save Feedback
                                 </Button>
                                 <Button
-                                  onClick={handleCompleteEvaluation}
+                                  onClick={() => setConfirmCompleteDialogOpen(true)}
                                   disabled={savingMarks}
                                   className="bg-green-600 hover:bg-green-700 text-white"
                                 >
@@ -826,6 +824,53 @@ export default function EvaluationsPage() {
             )}
           </div>
         )}
+
+        {/* Complete Evaluation Confirmation Dialog */}
+        <Dialog open={confirmCompleteDialogOpen} onOpenChange={setConfirmCompleteDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                <CheckCircle2 className="h-6 w-6 text-green-600" />
+                Complete Evaluation?
+              </DialogTitle>
+              <DialogDescription className="text-base pt-2">
+                Are you sure you want to mark this evaluation as complete?
+                <span className="block mt-2 text-red-600 font-semibold">
+                  ⚠️ This action cannot be undone.
+                </span>
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 my-4">
+              <p className="text-sm text-amber-900">
+                Once completed, you will not be able to modify marks or feedback for this project.
+              </p>
+            </div>
+
+            <DialogFooter className="gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setConfirmCompleteDialogOpen(false)}
+                disabled={savingMarks}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCompleteEvaluation}
+                disabled={savingMarks}
+                className="bg-green-600 hover:bg-green-700 text-white flex-1"
+              >
+                {savingMarks ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                )}
+                Yes, Complete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Document Action Dialog */}
         <Dialog open={documentDialogOpen} onOpenChange={setDocumentDialogOpen}>
