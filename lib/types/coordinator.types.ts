@@ -28,7 +28,10 @@ export interface Project {
   totalMarks?: number;
   finalFeedback?: string;
   evaluationCompletedAt?: string;
-  selectedIdea: SelectedIdea;
+  selectedIdea?: SelectedIdea;
+  customIdeaTitle?: string;
+  customIdeaDescription?: string;
+  customIdeaTechnologies?: string[];
   id: string;
 }
 

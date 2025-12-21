@@ -242,7 +242,7 @@ export default function ProjectMonitoringPage() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <CardTitle className="text-lg line-clamp-2">
-                    {project?.selectedIdea?.title || 'Untitled Project'}
+                    {project?.selectedIdea?.title || project?.customIdeaTitle || 'Untitled Project'}
                   </CardTitle>
                   <CardDescription className="mt-1">
                     {project?.group?.name || 'No Group'}
@@ -355,7 +355,7 @@ export default function ProjectMonitoringPage() {
             <>
               <DialogHeader>
                 <DialogTitle className="text-2xl">
-                  {selectedProject?.selectedIdea?.title || 'Project Details'}
+                  {selectedProject?.selectedIdea?.title || selectedProject?.customIdeaTitle || 'Project Details'}
                 </DialogTitle>
                 <DialogDescription>
                   Detailed project information and evaluation
@@ -378,19 +378,19 @@ export default function ProjectMonitoringPage() {
                 {/* Project Description */}
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Project Description</h3>
-                  <p className="text-gray-700">{selectedProject?.selectedIdea?.description || 'No description available'}</p>
+                  <p className="text-gray-700">{selectedProject?.selectedIdea?.description || selectedProject?.customIdeaDescription || 'No description available'}</p>
                 </div>
 
                 {/* Technologies */}
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Technologies</h3>
                   <div className="flex flex-wrap gap-2">
-                    {(selectedProject?.selectedIdea?.technologies || []).map((tech, index) => (
+                    {(selectedProject?.selectedIdea?.technologies || selectedProject?.customIdeaTechnologies || []).map((tech, index) => (
                       <Badge key={index} variant="secondary">
                         {tech}
                       </Badge>
                     ))}
-                    {(!selectedProject?.selectedIdea?.technologies || selectedProject.selectedIdea.technologies.length === 0) && (
+                    {(!selectedProject?.selectedIdea?.technologies && !selectedProject?.customIdeaTechnologies) && (
                       <span className="text-sm text-gray-500">No technologies specified</span>
                     )}
                   </div>
