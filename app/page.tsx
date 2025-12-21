@@ -1,128 +1,144 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { BookOpen, UserCog, Shield, GraduationCap } from 'lucide-react';
+import React from "react";
+import { useRouter } from "next/navigation";
+import {
+  BookOpen,
+  UserCog,
+  Shield,
+  GraduationCap,
+  ArrowRight,
+  Github,
+} from "lucide-react";
 
 export default function HomePage() {
   const router = useRouter();
 
   const roles = [
     {
-      id: 'student',
-      title: 'Student',
-      description: 'Access your FYP submissions, view feedback, and track progress',
+      id: "student",
+      title: "Student Portal",
+      description:
+        "Submit your FYP, view supervisor feedback, and track evaluation progress in one place.",
       icon: BookOpen,
-      route: '/student/login',
-      color: 'bg-blue-50 hover:bg-blue-100 border-blue-200'
+      route: "/student/login",
+      accent: "from-blue-500 to-blue-600",
     },
     {
-      id: 'supervisor',
-      title: 'Supervisor',
-      description: 'Review student projects, provide guidance, and manage evaluations',
+      id: "supervisor",
+      title: "Supervisor Portal",
+      description:
+        "Manage assigned students, review submissions, and provide structured evaluations.",
       icon: UserCog,
-      route: '/supervisor/login',
-      color: 'bg-green-50 hover:bg-green-100 border-green-200'
+      route: "/supervisor/login",
+      accent: "from-emerald-500 to-emerald-600",
     },
     {
-      id: 'coordinator',
-      title: 'Coordinator',
-      description: 'Oversee all projects, assign supervisors, and manage system settings',
+      id: "coordinator",
+      title: "Coordinator Portal",
+      description:
+        "Oversee projects, assign supervisors, and control academic workflows centrally.",
       icon: Shield,
-      route: '/coordinator/login',
-      color: 'bg-purple-50 hover:bg-purple-100 border-purple-200'
-    }
+      route: "/coordinator/login",
+      accent: "from-violet-500 to-violet-600",
+    },
   ];
 
-  const handleRoleClick = (route: string) => {
-    router.push(route);
-  };
-
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
-      <header className="bg-gray-900 shadow-lg border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-2">
-              <GraduationCap className="h-10 w-10 text-blue-400 mr-3" />
-              <h1 className="text-3xl sm:text-4xl font-bold text-white">
-                FYP Management System
-              </h1>
+      <header className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 py-5">
+          <div className="flex items-center gap-3">
+            <div className="bg-slate-900 p-2.5 rounded-lg">
+              <GraduationCap className="h-7 w-7 text-white" />
             </div>
-            <p className="text-base sm:text-lg text-gray-300 mt-2">
-              Final Year Project Portal
-            </p>
+            <h1 className="text-2xl font-bold text-slate-900">
+              FYP Management Portal
+            </h1>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">
-            Welcome! Please Select Your Role
-          </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-            Choose your role below to access the portal and manage your final year projects
-          </p>
-        </div>
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto px-6 pt-20 pb-14 text-center">
+        <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
+          Manage Final Year Projects
+          <span className="block bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Smarter & Faster
+          </span>
+        </h2>
+        <p className="mt-6 text-lg text-slate-600 max-w-3xl mx-auto">
+          A centralized platform designed for students, supervisors, and
+          coordinators to streamline Final Year Project workflows efficiently.
+        </p>
+      </section>
 
-        {/* Role Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      {/* Role Cards */}
+      <section className="max-w-7xl mx-auto px-6 pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {roles.map((role) => {
             const Icon = role.icon;
             return (
               <button
                 key={role.id}
-                onClick={() => handleRoleClick(role.route)}
-                className={`${role.color} border-2 rounded-2xl p-8 transition-all duration-200 transform hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 text-left w-full`}
+                onClick={() => router.push(role.route)}
+                className="group relative bg-white rounded-3xl border border-slate-200 p-8 text-left
+                           shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex flex-col items-center text-center">
-                  <div className="bg-white rounded-full p-4 mb-4 shadow-md">
-                    <Icon className="h-12 w-12 text-gray-700" />
+                <div
+                  className={`absolute inset-x-0 top-0 h-1 rounded-t-3xl bg-linear-to-r ${role.accent}`}
+                />
+
+                <div className="flex items-center justify-between mb-6">
+                  <div
+                    className={`p-3 rounded-xl bg-linear-to-br ${role.accent} shadow-lg`}
+                  >
+                    <Icon className="h-7 w-7 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                    {role.title}
-                  </h3>
-                  <p className="text-gray-600 text-base leading-relaxed">
-                    {role.description}
-                  </p>
-                  <div className="mt-6 text-blue-600 font-semibold text-lg">
-                    Click to Login →
-                  </div>
+                  <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-slate-700 transition" />
+                </div>
+
+                <h3 className="text-xl font-bold text-slate-800 mb-3">
+                  {role.title}
+                </h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {role.description}
+                </p>
+
+                <div className="mt-6 font-semibold text-slate-800 group-hover:text-blue-600 transition">
+                  Access Portal
                 </div>
               </button>
             );
           })}
         </div>
+      </section>
 
-        {/* Help Section */}
-        <div className="mt-16 bg-white rounded-xl shadow-md p-6 sm:p-8 border border-gray-200">
-          <div className="text-center">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">
-              Need Help?
-            </h3>
-            <p className="text-gray-600 text-base mb-4">
-              If you're having trouble accessing the portal or need assistance, please contact your system administrator.
-            </p>
-            <a
-              href="mailto:support@fyp-portal.edu"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-200 text-base"
-            >
-              Contact Support
-            </a>
-          </div>
+      {/* Help Section */}
+      <section className="max-w-5xl mx-auto px-6 pb-24">
+        <div className="bg-linear-to-br from-slate-900 to-slate-800 rounded-3xl p-10 text-center text-white shadow-xl">
+          <h3 className="text-2xl font-bold mb-4">Need Assistance?</h3>
+          <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
+            Having trouble accessing the portal or facing system issues? Our
+            support team is here to help you.
+          </p>
+          <a
+            href="mailto:support@fyp-portal.edu"
+            className="inline-flex items-center gap-2 bg-white text-slate-900 font-semibold
+                       px-7 py-3 rounded-xl hover:bg-slate-100 transition"
+          >
+            Contact Support
+            <ArrowRight className="h-4 w-4" />
+          </a>
         </div>
-      </main>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 border-t border-gray-800 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-center text-gray-400 text-sm">
-            © 2025 FYP Management System. All rights reserved.
-          </p>
-        </div>
+      <footer className="border-t border-slate-200 py-6">
+        <p className="text-center text-slate-500 text-sm">
+          © 2025 FYP Management System. All rights reserved.
+        </p>
       </footer>
     </div>
   );
