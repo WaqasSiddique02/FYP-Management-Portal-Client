@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { coordinatorApi } from '@/lib/api/coordinator.api';
 import { 
@@ -146,7 +147,7 @@ const DemoSchedulingPage = () => {
       setIsCreateDialogOpen(false);
       resetCreateForm();
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Failed to create schedule');
+      toast.error(err?.response?.data?.message || 'Failed to create schedule');
     }
   };
 
@@ -159,7 +160,7 @@ const DemoSchedulingPage = () => {
       setSelectedSchedule(null);
       setEditForm({});
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Failed to update schedule');
+      toast.error(err?.response?.data?.message || 'Failed to update schedule');
     }
   };
 
@@ -171,14 +172,14 @@ const DemoSchedulingPage = () => {
       setIsDeleteDialogOpen(false);
       setSelectedSchedule(null);
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Failed to delete schedule');
+      toast.error(err?.response?.data?.message || 'Failed to delete schedule');
     }
   };
 
   const handleAutoSchedule = async () => {
     try {
       const result = await coordinatorApi.autoSchedule(autoScheduleForm);
-      alert(result.message + `\nScheduled: ${result.totalGroupsScheduled}, Remaining: ${result.remainingGroups}`);
+      toast.success(result.message + `\nScheduled: ${result.totalGroupsScheduled}, Remaining: ${result.remainingGroups}`);
       await fetchData();
       setIsAutoScheduleDialogOpen(false);
       setAutoScheduleForm({
@@ -188,13 +189,13 @@ const DemoSchedulingPage = () => {
         panelId: ''
       });
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Failed to auto-schedule');
+      toast.error(err?.response?.data?.message || 'Failed to auto-schedule');
     }
   };
 
   const handleSwapSchedules = async () => {
     if (!swapSchedule1 || !swapSchedule2) {
-      alert('Please select both schedules to swap');
+      toast.error('Please select both schedules to swap');
       return;
     }
     try {
@@ -207,7 +208,7 @@ const DemoSchedulingPage = () => {
       setSwapSchedule1('');
       setSwapSchedule2('');
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Failed to swap schedules');
+      toast.error(err?.response?.data?.message || 'Failed to swap schedules');
     }
   };
 

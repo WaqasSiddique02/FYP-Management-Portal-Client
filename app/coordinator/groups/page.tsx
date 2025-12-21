@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuthContext } from "@/lib/contexts/AuthContext";
 import apiClient from "@/lib/api/axios";
@@ -204,10 +205,10 @@ export default function GroupManagementPage() {
       );
       setAssignSupervisorOpen(false);
       await fetchGroups(); // Re-fetch to get updated data
-      alert("Supervisor assigned successfully!");
+      toast.success("Supervisor assigned successfully!");
     } catch (error: any) {
       console.error("Error assigning supervisor:", error);
-      alert(error.response?.data?.message || "Failed to assign supervisor.");
+      toast.error(error.response?.data?.message || "Failed to assign supervisor.");
     }
   };
 
@@ -219,10 +220,10 @@ export default function GroupManagementPage() {
       );
       setChangeSupervisorOpen(false);
       await fetchGroups(); // Re-fetch to get updated data
-      alert("Supervisor changed successfully!");
+      toast.success("Supervisor changed successfully!");
     } catch (error: any) {
       console.error("Error changing supervisor:", error);
-      alert(error.response?.data?.message || "Failed to change supervisor.");
+      toast.error(error.response?.data?.message || "Failed to change supervisor.");
     }
   };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { coordinatorApi } from '@/lib/api/coordinator.api';
 import apiClient from '@/lib/api/axios';
@@ -111,7 +112,7 @@ export default function EvaluationPanelsPage() {
 
   const handleCreatePanel = async () => {
     if (!formData.name || formData.members.length === 0) {
-      alert('Please fill in panel name and select at least one member');
+      toast.error('Please fill in panel name and select at least one member');
       return;
     }
 
@@ -123,7 +124,7 @@ export default function EvaluationPanelsPage() {
       fetchPanels();
     } catch (error: any) {
       console.error('Error creating panel:', error);
-      alert(error?.response?.data?.message || 'Failed to create panel');
+      toast.error(error?.response?.data?.message || 'Failed to create panel');
     } finally {
       setSubmitting(false);
     }
@@ -131,7 +132,7 @@ export default function EvaluationPanelsPage() {
 
   const handleUpdatePanel = async () => {
     if (!selectedPanel || !editFormData.name || !editFormData.members || editFormData.members.length === 0) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -144,7 +145,7 @@ export default function EvaluationPanelsPage() {
       fetchPanels();
     } catch (error: any) {
       console.error('Error updating panel:', error);
-      alert(error?.response?.data?.message || 'Failed to update panel');
+      toast.error(error?.response?.data?.message || 'Failed to update panel');
     } finally {
       setSubmitting(false);
     }
@@ -161,7 +162,7 @@ export default function EvaluationPanelsPage() {
       fetchPanels();
     } catch (error: any) {
       console.error('Error deleting panel:', error);
-      alert(error?.response?.data?.message || 'Failed to delete panel');
+      toast.error(error?.response?.data?.message || 'Failed to delete panel');
     } finally {
       setSubmitting(false);
     }

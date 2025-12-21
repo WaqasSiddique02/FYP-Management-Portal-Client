@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { coordinatorApi } from '@/lib/api/coordinator.api';
 import { Announcement, CreateAnnouncementDto, UpdateAnnouncementDto } from '@/lib/types/coordinator.types';
@@ -92,7 +93,7 @@ export default function AnnouncementsPage() {
 
   const handleCreateAnnouncement = async () => {
     if (!formData.title || !formData.content) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -104,7 +105,7 @@ export default function AnnouncementsPage() {
       fetchAnnouncements();
     } catch (error: any) {
       console.error('Error creating announcement:', error);
-      alert(error?.response?.data?.message || 'Failed to create announcement');
+      toast.error(error?.response?.data?.message || 'Failed to create announcement');
     } finally {
       setSubmitting(false);
     }
@@ -112,7 +113,7 @@ export default function AnnouncementsPage() {
 
   const handleUpdateAnnouncement = async () => {
     if (!selectedAnnouncement || !editFormData.title || !editFormData.content) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -125,7 +126,7 @@ export default function AnnouncementsPage() {
       fetchAnnouncements();
     } catch (error: any) {
       console.error('Error updating announcement:', error);
-      alert(error?.response?.data?.message || 'Failed to update announcement');
+      toast.error(error?.response?.data?.message || 'Failed to update announcement');
     } finally {
       setSubmitting(false);
     }
@@ -142,7 +143,7 @@ export default function AnnouncementsPage() {
       fetchAnnouncements();
     } catch (error: any) {
       console.error('Error deleting announcement:', error);
-      alert(error?.response?.data?.message || 'Failed to delete announcement');
+      toast.error(error?.response?.data?.message || 'Failed to delete announcement');
     } finally {
       setSubmitting(false);
     }

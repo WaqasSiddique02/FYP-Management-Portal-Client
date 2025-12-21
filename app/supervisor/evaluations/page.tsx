@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { supervisorApi } from '@/lib/api/supervisor.api';
 import { useAuthContext } from '@/lib/contexts/AuthContext';
@@ -185,7 +186,7 @@ export default function EvaluationsPage() {
       await supervisorApi.downloadDocument(document._id);
       // The download will be triggered by the browser
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to download document');
+      toast.error(error.response?.data?.message || 'Failed to download document');
     }
   };
 
@@ -204,21 +205,21 @@ export default function EvaluationsPage() {
       
       if (documentAction === 'approve') {
         await supervisorApi.approveDocument(selectedDocument._id, { comments: documentComment || undefined });
-        alert('Document approved successfully');
+        toast.success('Document approved successfully');
       } else if (documentAction === 'reject') {
         if (!documentComment.trim()) {
-          alert('Reason is required to reject a document');
+          toast.error('Reason is required to reject a document');
           return;
         }
         await supervisorApi.rejectDocument(selectedDocument._id, { reason: documentComment });
-        alert('Document rejected');
+        toast.success('Document rejected');
       } else if (documentAction === 'feedback') {
         if (!documentComment.trim()) {
-          alert('Feedback cannot be empty');
+          toast.error('Feedback cannot be empty');
           return;
         }
         await supervisorApi.addDocumentFeedback(selectedDocument._id, { feedback: documentComment });
-        alert('Feedback added successfully');
+        toast.success('Feedback added successfully');
       }
 
       setDocumentDialogOpen(false);
@@ -227,7 +228,7 @@ export default function EvaluationsPage() {
         fetchDocuments(selectedProject._id);
       }
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to submit action');
+      toast.error(error.response?.data?.message || 'Failed to submit action');
     } finally {
       setSubmittingDocument(false);
     }
@@ -249,10 +250,10 @@ export default function EvaluationsPage() {
     try {
       setSavingMarks(true);
       await supervisorApi.addFinalMarks(selectedProject._id, marks);
-      alert('Marks saved successfully');
+      toast.success('Marks saved successfully');
       fetchProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to save marks');
+      toast.error(error.response?.data?.message || 'Failed to save marks');
     } finally {
       setSavingMarks(false);
     }
@@ -260,17 +261,17 @@ export default function EvaluationsPage() {
 
   const handleSaveFeedback = async () => {
     if (!selectedProject || !finalFeedback.trim()) {
-      alert('Feedback cannot be empty');
+      toast.error('Feedback cannot be empty');
       return;
     }
 
     try {
       setSavingMarks(true);
       await supervisorApi.addFinalFeedback(selectedProject._id, { feedback: finalFeedback });
-      alert('Feedback saved successfully');
+      toast.success('Feedback saved successfully');
       fetchProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to save feedback');
+      toast.error(error.response?.data?.message || 'Failed to save feedback');
     } finally {
       setSavingMarks(false);
     }
@@ -286,10 +287,10 @@ export default function EvaluationsPage() {
     try {
       setSavingMarks(true);
       await supervisorApi.completeEvaluation(selectedProject._id);
-      alert('Evaluation marked as complete');
+      toast.success('Evaluation marked as complete');
       fetchProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to complete evaluation');
+      toast.error(error.response?.data?.message || 'Failed to complete evaluation');
     } finally {
       setSavingMarks(false);
     }

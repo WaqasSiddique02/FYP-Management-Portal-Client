@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { supervisorApi } from '@/lib/api/supervisor.api';
 import { useAuthContext } from '@/lib/contexts/AuthContext';
@@ -176,7 +177,7 @@ export default function ProposalsPage() {
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading file:', error);
-      alert('Failed to download proposal');
+      toast.error('Failed to download proposal');
     }
   };
 
@@ -187,12 +188,12 @@ export default function ProposalsPage() {
       setSubmitting(true);
       const payload = comment ? { comments: comment } : {};
       await supervisorApi.approveProposal(selectedProposal._id, payload);
-      alert('Proposal approved successfully');
+      toast.success('Proposal approved successfully');
       setIsDialogOpen(false);
       setComment('');
       fetchProposals();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to approve proposal');
+      toast.error(error.response?.data?.message || 'Failed to approve proposal');
     } finally {
       setSubmitting(false);
     }
@@ -200,19 +201,19 @@ export default function ProposalsPage() {
 
   const handleReject = async () => {
     if (!selectedProposal || !comment.trim()) {
-      alert('Reason is required to reject a proposal');
+      toast.error('Reason is required to reject a proposal');
       return;
     }
 
     try {
       setSubmitting(true);
       await supervisorApi.rejectProposal(selectedProposal._id, { reason: comment });
-      alert('Proposal rejected');
+      toast.success('Proposal rejected');
       setIsDialogOpen(false);
       setComment('');
       fetchProposals();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to reject proposal');
+      toast.error(error.response?.data?.message || 'Failed to reject proposal');
     } finally {
       setSubmitting(false);
     }
@@ -220,19 +221,19 @@ export default function ProposalsPage() {
 
   const handleAddComment = async () => {
     if (!selectedProposal || !comment.trim()) {
-      alert('Comment cannot be empty');
+      toast.error('Comment cannot be empty');
       return;
     }
 
     try {
       setSubmitting(true);
       await supervisorApi.addProposalComment(selectedProposal._id, { comment });
-      alert('Comment added successfully');
+      toast.success('Comment added successfully');
       setIsDialogOpen(false);
       setComment('');
       fetchProposals();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to add comment');
+      toast.error(error.response?.data?.message || 'Failed to add comment');
     } finally {
       setSubmitting(false);
     }

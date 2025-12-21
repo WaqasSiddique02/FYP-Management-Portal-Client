@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   Dialog,
   DialogContent,
@@ -70,17 +71,17 @@ export default function GroupDetailsDialog({
 
       if (group.projectIdea.isCustomIdea) {
         await supervisorApi.approveCustomIdea(group.projectIdea.id || group.id, payload);
-        alert('Custom idea approved successfully');
+        toast.success('Custom idea approved successfully');
       } else {
         await supervisorApi.approveSelectedIdea(group.projectIdea.id || group.id, payload);
-        alert('Project idea approved successfully');
+        toast.success('Project idea approved successfully');
       }
 
       setComment('');
       onUpdate();
       onClose();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to approve idea');
+      toast.error(error.response?.data?.message || 'Failed to approve idea');
     } finally {
       setLoading(false);
     }
@@ -88,7 +89,7 @@ export default function GroupDetailsDialog({
 
   const handleReject = async () => {
     if (!group.projectIdea || !comment.trim()) {
-      alert('Comment is required to reject an idea');
+      toast.error('Comment is required to reject an idea');
       return;
     }
 
@@ -98,17 +99,17 @@ export default function GroupDetailsDialog({
 
       if (group.projectIdea.isCustomIdea) {
         await supervisorApi.rejectCustomIdea(group.projectIdea.id || group.id, payload);
-        alert('Custom idea rejected');
+        toast.success('Custom idea rejected');
       } else {
         await supervisorApi.rejectSelectedIdea(group.projectIdea.id || group.id, payload);
-        alert('Project idea rejected');
+        toast.success('Project idea rejected');
       }
 
       setComment('');
       onUpdate();
       onClose();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to reject idea');
+      toast.error(error.response?.data?.message || 'Failed to reject idea');
     } finally {
       setLoading(false);
     }

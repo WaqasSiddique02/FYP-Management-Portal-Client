@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useAuthContext } from "@/lib/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -236,7 +237,7 @@ export default function ManagementPage() {
   // Handle bulk upload
   const handleBulkUpload = async () => {
     if (!csvFile) {
-      alert('Please select a CSV file');
+      toast.error('Please select a CSV file');
       return;
     }
 
@@ -248,7 +249,7 @@ export default function ManagementPage() {
       const supervisors = await parseCSV(csvFile);
       
       if (supervisors.length === 0) {
-        alert('No valid data found in CSV file');
+        toast.error('No valid data found in CSV file');
         setIsUploading(false);
         return;
       }
@@ -305,7 +306,7 @@ export default function ManagementPage() {
       }
     } catch (error: any) {
       console.error('Error processing CSV:', error);
-      alert(error.message || 'Failed to process CSV file');
+      toast.error(error.message || 'Failed to process CSV file');
     } finally {
       setIsUploading(false);
     }
@@ -329,9 +330,9 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
   // Copy text to clipboard
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert('Copied to clipboard!');
+      toast.success('Copied to clipboard!');
     }).catch(() => {
-      alert('Failed to copy');
+      toast.error('Failed to copy');
     });
   };
 
@@ -680,10 +681,10 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       setAddDepartmentOpen(false);
       setNewDepartment({ name: "", code: "", description: "" });
       await fetchDepartments();
-      alert('Department added successfully!');
+      toast.success('Department added successfully!');
     } catch (error: any) {
       console.error("Error adding department:", error);
-      alert(error.response?.data?.message || 'Failed to add department');
+      toast.error(error.response?.data?.message || 'Failed to add department');
     }
   };
 
@@ -701,10 +702,10 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       console.log('Department updated successfully:', response.data);
       setEditDepartmentOpen(false);
       await fetchDepartments();
-      alert('Department updated successfully!');
+      toast.success('Department updated successfully!');
     } catch (error: any) {
       console.error("Error updating department:", error);
-      alert(error.response?.data?.message || 'Failed to update department');
+      toast.error(error.response?.data?.message || 'Failed to update department');
     }
   };
 
@@ -717,10 +718,10 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       console.log('Department deleted successfully:', response.data);
       setDeleteDepartmentOpen(false);
       await fetchDepartments();
-      alert('Department deleted successfully!');
+      toast.success('Department deleted successfully!');
     } catch (error: any) {
       console.error("Error deleting department:", error);
-      alert(error.response?.data?.message || 'Failed to delete department. Department must be empty.');
+      toast.error(error.response?.data?.message || 'Failed to delete department. Department must be empty.');
     }
   };
 
@@ -766,7 +767,7 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       await fetchAvailableSupervisors();
     } catch (error: any) {
       console.error("Error creating supervisor:", error);
-      alert(error.response?.data?.message || 'Failed to create supervisor');
+      toast.error(error.response?.data?.message || 'Failed to create supervisor');
     }
   };
 
@@ -780,10 +781,10 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       setAddFacultyOpen(false);
       setNewFaculty({ supervisorId: "", departmentId: "" });
       await fetchAllFaculties();
-      alert('Faculty added successfully!');
+      toast.success('Faculty added successfully!');
     } catch (error: any) {
       console.error("Error adding faculty:", error);
-      alert(error.response?.data?.message || 'Failed to add faculty');
+      toast.error(error.response?.data?.message || 'Failed to add faculty');
     }
   };
 
@@ -793,10 +794,10 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       console.log('Faculty transferred successfully:', response.data);
       setTransferFacultyOpen(false);
       await fetchAllFaculties();
-      alert('Faculty transferred successfully!');
+      toast.success('Faculty transferred successfully!');
     } catch (error: any) {
       console.error("Error transferring faculty:", error);
-      alert(error.response?.data?.message || 'Failed to transfer faculty');
+      toast.error(error.response?.data?.message || 'Failed to transfer faculty');
     }
   };
 
@@ -811,11 +812,11 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
         console.log('Faculty removed successfully:', response.data);
         setRemoveFacultyOpen(false);
         await fetchAllFaculties();
-        alert('Faculty removed successfully!');
+        toast.success('Faculty removed successfully!');
       }
     } catch (error: any) {
       console.error("Error removing faculty:", error);
-      alert(error.response?.data?.message || 'Failed to remove faculty');
+      toast.error(error.response?.data?.message || 'Failed to remove faculty');
     }
   };
 
@@ -826,10 +827,10 @@ Dr. John,Doe,john.doe@university.edu,Computer Science,03009876543,EMP-002,Assist
       await apiClient.delete(`${API_BASE_URL}/users/${selectedStudent._id}?role=student`);
       setDeleteStudentOpen(false);
       await fetchAllStudents();
-      alert('Student deleted successfully!');
+      toast.success('Student deleted successfully!');
     } catch (error: any) {
       console.error("Error deleting student:", error);
-      alert(error.response?.data?.message || 'Failed to delete student');
+      toast.error(error.response?.data?.message || 'Failed to delete student');
     }
   };
 

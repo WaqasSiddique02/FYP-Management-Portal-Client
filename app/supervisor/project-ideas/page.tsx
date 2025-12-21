@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { supervisorApi } from '@/lib/api/supervisor.api';
 import { useAuthContext } from '@/lib/contexts/AuthContext';
@@ -227,7 +228,7 @@ export default function ProjectIdeasPage() {
 
   const handleSubmit = async () => {
     if (!formData.title || !formData.description) {
-      alert('Title and description are required');
+      toast.error('Title and description are required');
       return;
     }
 
@@ -244,16 +245,16 @@ export default function ProjectIdeasPage() {
 
       if (dialogMode === 'create') {
         await supervisorApi.createProjectIdea(payload);
-        alert('Project idea created successfully');
+        toast.success('Project idea created successfully');
       } else if (dialogMode === 'edit' && selectedProject) {
         await supervisorApi.updateProjectIdea(selectedProject._id, payload);
-        alert('Project idea updated successfully');
+        toast.success('Project idea updated successfully');
       }
 
       setIsDialogOpen(false);
       fetchOwnProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to save project idea');
+      toast.error(error.response?.data?.message || 'Failed to save project idea');
     } finally {
       setSubmitting(false);
     }
@@ -266,10 +267,10 @@ export default function ProjectIdeasPage() {
 
     try {
       await supervisorApi.deleteProjectIdea(projectId);
-      alert('Project idea deleted successfully');
+      toast.success('Project idea deleted successfully');
       fetchOwnProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to delete project idea');
+      toast.error(error.response?.data?.message || 'Failed to delete project idea');
     }
   };
 
@@ -281,11 +282,11 @@ export default function ProjectIdeasPage() {
       await supervisorApi.approveCustomIdea(selectedCustomIdea._id, {
         comment: reviewComment || undefined,
       });
-      alert('Custom idea approved successfully');
+      toast.success('Custom idea approved successfully');
       setIsDialogOpen(false);
       fetchCustomProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to approve idea');
+      toast.error(error.response?.data?.message || 'Failed to approve idea');
     } finally {
       setReviewing(false);
     }
@@ -293,7 +294,7 @@ export default function ProjectIdeasPage() {
 
   const handleRejectCustomIdea = async () => {
     if (!selectedCustomIdea || !reviewComment.trim()) {
-      alert('Comment is required to reject an idea');
+      toast.error('Comment is required to reject an idea');
       return;
     }
 
@@ -302,11 +303,11 @@ export default function ProjectIdeasPage() {
       await supervisorApi.rejectCustomIdea(selectedCustomIdea._id, {
         comment: reviewComment,
       });
-      alert('Custom idea rejected');
+      toast.success('Custom idea rejected');
       setIsDialogOpen(false);
       fetchCustomProjects();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to reject idea');
+      toast.error(error.response?.data?.message || 'Failed to reject idea');
     } finally {
       setReviewing(false);
     }

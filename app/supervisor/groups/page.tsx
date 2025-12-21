@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { supervisorApi } from '@/lib/api/supervisor.api';
 import { GroupDetails } from '@/lib/types/supervisor.types';
@@ -140,13 +141,13 @@ export default function SupervisorGroupsPage() {
         await supervisorApi.approveSelectedIdea(expandedGroupDetails.projectIdea.id || expandedGroupDetails.id, payload);
       }
 
-      alert('Project idea approved successfully');
+      toast.success('Project idea approved successfully');
       setComment('');
       setExpandedGroupId(null);
       setExpandedGroupDetails(null);
       fetchGroups();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to approve idea');
+      toast.error(error.response?.data?.message || 'Failed to approve idea');
     } finally {
       setSubmitting(false);
     }
@@ -154,7 +155,7 @@ export default function SupervisorGroupsPage() {
 
   const handleReject = async () => {
     if (!expandedGroupDetails?.projectIdea || !comment.trim()) {
-      alert('Comment is required to reject an idea');
+      toast.error('Comment is required to reject an idea');
       return;
     }
 
@@ -168,13 +169,13 @@ export default function SupervisorGroupsPage() {
         await supervisorApi.rejectSelectedIdea(expandedGroupDetails.projectIdea.id || expandedGroupDetails.id, payload);
       }
 
-      alert('Project idea rejected');
+      toast.success('Project idea rejected');
       setComment('');
       setExpandedGroupId(null);
       setExpandedGroupDetails(null);
       fetchGroups();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Failed to reject idea');
+      toast.error(error.response?.data?.message || 'Failed to reject idea');
     } finally {
       setSubmitting(false);
     }

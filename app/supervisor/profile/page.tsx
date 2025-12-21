@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { supervisorApi } from '@/lib/api/supervisor.api';
 import { useAuthContext } from '@/lib/contexts/AuthContext';
@@ -167,12 +168,12 @@ export default function SupervisorProfilePage() {
       };
 
       await supervisorApi.updateProfile(payload);
-      alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
       setIsEditing(false);
       fetchProfile(); // Refresh profile
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      alert(error.response?.data?.message || 'Failed to update profile');
+      toast.error(error.response?.data?.message || 'Failed to update profile');
     } finally {
       setIsSaving(false);
     }
@@ -204,7 +205,7 @@ export default function SupervisorProfilePage() {
         newPassword: passwordData.newPassword,
       });
 
-      alert('Password updated successfully!');
+      toast.success('Password updated successfully!');
       setPasswordDialogOpen(false);
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error: any) {
