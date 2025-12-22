@@ -142,7 +142,7 @@ export default function SupervisorDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Activity and Workload - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">
-            <RecentActivityList activities={dashboardData.recentActivity.activities} />
+            <RecentActivityList activities={dashboardData.recentActivity.activities} maxItems={5} />
             <WorkloadSummary
               documentSummary={dashboardData.documentSummary}
               evaluations={dashboardData.evaluations}

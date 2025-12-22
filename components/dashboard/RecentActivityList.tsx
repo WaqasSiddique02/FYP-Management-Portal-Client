@@ -5,9 +5,13 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface RecentActivityListProps {
   activities: Activity[];
+  maxItems?: number;
 }
 
-export default function RecentActivityList({ activities }: RecentActivityListProps) {
+export default function RecentActivityList({ activities, maxItems = 5 }: RecentActivityListProps) {
+  // Limit activities to maxItems
+  const limitedActivities = activities.slice(0, maxItems);
+
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'document_upload':
@@ -58,11 +62,11 @@ export default function RecentActivityList({ activities }: RecentActivityListPro
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {activities.length === 0 ? (
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+          {limitedActivities.length === 0 ? (
             <p className="text-gray-500 text-center py-8">No recent activity</p>
           ) : (
-            activities.map((activity, index) => {
+            limitedActivities.map((activity, index) => {
               const Icon = getActivityIcon(activity.type);
               const colorClass = getActivityColor(activity.type);
 
